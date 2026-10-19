@@ -8,12 +8,18 @@ import WardrobePage from './pages/WardrobePage.jsx';
 import RecommendationsPage from './pages/RecommendationsPage.jsx';
 import SavedOutfitsPage from './pages/SavedOutfitsPage.jsx';
 import PreferencesPage from './pages/PreferencesPage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import RegisterPage from './pages/RegisterPage.jsx';
 
 import { api, getAuthToken, getStoredUser, setAuthToken, setStoredUser } from './api/client.js';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [currentUser, setCurrentUser] = useState(getStoredUser());
+  const [authView, setAuthView] = useState('login'); // 'login' or 'register'
+  const [prefillEmail, setPrefillEmail] = useState('');
+  const [loginNotification, setLoginNotification] = useState(null);
+
   const [items, setItems] = useState([]);
   const [wardrobeStatus, setWardrobeStatus] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
@@ -45,16 +51,8 @@ export default function App() {
   const loadData = useCallback(async () => {
     const token = getAuthToken();
     if (!token) {
-      // Auto-authenticate as demo user if no token exists for seamless first experience
-      try {
-        const demoRes = await api.loginDemo();
-        if (demoRes.success) {
-          setCurrentUser(demoRes.user);
-        }
-      } catch (err) {
-        setIsAuthModalOpen(true);
-        return;
-      }
+      setCurrentUser(null);
+      return;
     }
 
     try {
@@ -83,8 +81,9 @@ export default function App() {
       }
     } catch (err) {
       console.error('Failed to load wardrobe data:', err);
-      if (err.message?.includes('Authentication')) {
-        setIsAuthModalOpen(true);
+      if (err.message?.includes('Authentication') || err.message?.includes('401')) {
+        setCurrentUser(null);
+        setAuthView('login');
       }
     } finally {
       setLoading(false);
@@ -96,7 +95,7 @@ export default function App() {
 
     const handleAuthInvalid = () => {
       setCurrentUser(null);
-      setIsAuthModalOpen(true);
+      setAuthView('login');
     };
 
     window.addEventListener('wardrobe-auth-invalid', handleAuthInvalid);
@@ -105,11 +104,20 @@ export default function App() {
     };
   }, [loadData]);
 
-  const handleAuthSuccess = async (user) => {
+  const handleLoginSuccess = async (user) => {
     setCurrentUser(user);
+    setActiveTab('dashboard');
     setRecommendations([]);
     await loadData();
-    showToast(`Welcome back, ${user.name}!`, 'success');
+    showToast(`Welcome back, ${user.name || user.username}!`, 'success');
+  };
+
+  const handleRegisterSuccess = async (user) => {
+    setCurrentUser(user);
+    setActiveTab('dashboard');
+    setRecommendations([]);
+    await loadData();
+    showToast(`Welcome to Virtual Wardrobe, ${user.name || user.username}!`, 'success');
   };
 
   const handleLogout = () => {
@@ -118,8 +126,14 @@ export default function App() {
     setItems([]);
     setSavedOutfits([]);
     setRecommendations([]);
+    setAuthView('login');
     showToast('Signed out of wardrobe profile', 'info');
-    setIsAuthModalOpen(true);
+  };
+
+  const handleSwitchAccount = () => {
+    api.logout();
+    setCurrentUser(null);
+    setAuthView('login');
   };
 
   // Clothing Item CRUD Handlers
@@ -289,6 +303,51 @@ export default function App() {
     savedOutfits.map(o => `outfit-${o.top.id}-${o.bottom.id}-${o.shoes.id}${o.accessory ? `-${o.accessory.id}` : ''}`)
   );
 
+  // If unauthenticated, display the full-page Login or Registration page
+  if (!currentUser) {
+    if (authView === 'register') {
+      return (
+        <>
+          <RegisterPage
+            onRegisterSuccess={handleRegisterSuccess}
+            onNavigateToLogin={() => {
+              setLoginNotification(null);
+              setAuthView('login');
+            }}
+          />
+          {toast && (
+            <Toast
+              message={toast.message}
+              type={toast.type}
+              onClose={() => setToast(null)}
+            />
+          )}
+        </>
+      );
+    }
+
+    return (
+      <>
+        <LoginPage
+          prefillEmail={prefillEmail}
+          successNotification={loginNotification}
+          onLoginSuccess={handleLoginSuccess}
+          onNavigateToRegister={() => {
+            setLoginNotification(null);
+            setAuthView('register');
+          }}
+        />
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#faf9f6] text-slate-800">
       {/* Top Navigation */}
@@ -297,7 +356,7 @@ export default function App() {
         onSelectTab={setActiveTab}
         itemCount={items.length}
         currentUser={currentUser}
-        onOpenAuth={() => setIsAuthModalOpen(true)}
+        onOpenAuth={handleSwitchAccount}
         onLogout={handleLogout}
       />
 

@@ -1,19 +1,26 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export function getAuthToken() {
-  return localStorage.getItem('wardrobe_auth_token') || null;
+  return localStorage.getItem('wardrobe_auth_token') || sessionStorage.getItem('wardrobe_auth_token') || null;
 }
 
-export function setAuthToken(token) {
+export function setAuthToken(token, remember = true) {
   if (token) {
-    localStorage.setItem('wardrobe_auth_token', token);
+    if (remember) {
+      localStorage.setItem('wardrobe_auth_token', token);
+      sessionStorage.removeItem('wardrobe_auth_token');
+    } else {
+      sessionStorage.setItem('wardrobe_auth_token', token);
+      localStorage.removeItem('wardrobe_auth_token');
+    }
   } else {
     localStorage.removeItem('wardrobe_auth_token');
+    sessionStorage.removeItem('wardrobe_auth_token');
   }
 }
 
 export function getStoredUser() {
-  const userJson = localStorage.getItem('wardrobe_auth_user');
+  const userJson = localStorage.getItem('wardrobe_auth_user') || sessionStorage.getItem('wardrobe_auth_user');
   if (!userJson) return null;
   try {
     return JSON.parse(userJson);
@@ -22,11 +29,18 @@ export function getStoredUser() {
   }
 }
 
-export function setStoredUser(user) {
+export function setStoredUser(user, remember = true) {
   if (user) {
-    localStorage.setItem('wardrobe_auth_user', JSON.stringify(user));
+    if (remember) {
+      localStorage.setItem('wardrobe_auth_user', JSON.stringify(user));
+      sessionStorage.removeItem('wardrobe_auth_user');
+    } else {
+      sessionStorage.setItem('wardrobe_auth_user', JSON.stringify(user));
+      localStorage.removeItem('wardrobe_auth_user');
+    }
   } else {
     localStorage.removeItem('wardrobe_auth_user');
+    sessionStorage.removeItem('wardrobe_auth_user');
   }
 }
 
@@ -62,26 +76,57 @@ async function request(endpoint, options = {}) {
 
 export const api = {
   // Auth
-  async login(username, password) {
+  async login(identifierOrParams, passwordMaybe) {
+    let email, username, password, rememberMe = true;
+    if (typeof identifierOrParams === 'object' && identifierOrParams !== null) {
+      email = identifierOrParams.email;
+      username = identifierOrParams.username;
+      password = identifierOrParams.password;
+      if (identifierOrParams.rememberMe !== undefined) rememberMe = !!identifierOrParams.rememberMe;
+    } else {
+      if (typeof identifierOrParams === 'string' && identifierOrParams.includes('@')) {
+        email = identifierOrParams;
+      } else {
+        username = identifierOrParams;
+      }
+      password = passwordMaybe;
+    }
+
     const res = await request('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ email, username, password })
     });
     if (res.token) {
-      setAuthToken(res.token);
-      setStoredUser(res.user);
+      setAuthToken(res.token, rememberMe);
+      setStoredUser(res.user, rememberMe);
     }
     return res;
   },
 
-  async register(username, name, password, seedSample = true) {
+  async register(paramsOrUsername, nameMaybe, passwordMaybe, seedSampleMaybe = true) {
+    let email, username, name, password, seedSample = true, rememberMe = true, autoLogin = true;
+    if (typeof paramsOrUsername === 'object' && paramsOrUsername !== null) {
+      email = paramsOrUsername.email;
+      username = paramsOrUsername.username;
+      name = paramsOrUsername.name;
+      password = paramsOrUsername.password;
+      if (paramsOrUsername.seedSample !== undefined) seedSample = !!paramsOrUsername.seedSample;
+      if (paramsOrUsername.rememberMe !== undefined) rememberMe = !!paramsOrUsername.rememberMe;
+      if (paramsOrUsername.autoLogin !== undefined) autoLogin = !!paramsOrUsername.autoLogin;
+    } else {
+      username = paramsOrUsername;
+      name = nameMaybe;
+      password = passwordMaybe;
+      seedSample = seedSampleMaybe;
+    }
+
     const res = await request('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ username, name, password, seedSample })
+      body: JSON.stringify({ email, username, name, password, seedSample })
     });
-    if (res.token) {
-      setAuthToken(res.token);
-      setStoredUser(res.user);
+    if (res.token && autoLogin) {
+      setAuthToken(res.token, rememberMe);
+      setStoredUser(res.user, rememberMe);
     }
     return res;
   },
@@ -91,8 +136,8 @@ export const api = {
       method: 'POST'
     });
     if (res.token) {
-      setAuthToken(res.token);
-      setStoredUser(res.user);
+      setAuthToken(res.token, true);
+      setStoredUser(res.user, true);
     }
     return res;
   },

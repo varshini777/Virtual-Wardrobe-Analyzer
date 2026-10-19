@@ -91,23 +91,27 @@ export function initDatabase() {
     );
   `);
 
-  // Migration: Ensure password_hash column exists
+  // Migration: Ensure password_hash and email columns exist
   const userColumns = db.prepare('PRAGMA table_info(users)').all();
   const hasPasswordHash = userColumns.some(c => c.name === 'password_hash');
   if (!hasPasswordHash) {
     db.exec('ALTER TABLE users ADD COLUMN password_hash TEXT;');
+  }
+  const hasEmail = userColumns.some(c => c.name === 'email');
+  if (!hasEmail) {
+    db.exec('ALTER TABLE users ADD COLUMN email TEXT;');
   }
 
   // Seed / Update standard demo account
   const defaultPasswordHash = bcrypt.hashSync('demo123', 10);
   const now = new Date().toISOString();
 
-  const existingDefault = db.prepare('SELECT id, password_hash FROM users WHERE id = ?').get('default-user');
+  const existingDefault = db.prepare('SELECT id, password_hash, email FROM users WHERE id = ?').get('default-user');
   if (!existingDefault) {
     db.prepare(`
-      INSERT INTO users (id, username, name, password_hash, created_at)
-      VALUES (?, ?, ?, ?, ?)
-    `).run('default-user', 'demo', 'Alex Morgan', defaultPasswordHash, now);
+      INSERT INTO users (id, username, email, name, password_hash, created_at)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run('default-user', 'demo', 'demo@wardrobe.internal', 'Alex Morgan', defaultPasswordHash, now);
 
     db.prepare(`
       INSERT INTO user_preferences (user_id, favorite_colors, disliked_colors, preferred_styles, default_weather, default_occasion, updated_at)
@@ -123,8 +127,13 @@ export function initDatabase() {
     );
 
     seedSampleWardrobe('default-user');
-  } else if (!existingDefault.password_hash) {
-    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(defaultPasswordHash, 'default-user');
+  } else {
+    if (!existingDefault.password_hash) {
+      db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(defaultPasswordHash, 'default-user');
+    }
+    if (!existingDefault.email) {
+      db.prepare('UPDATE users SET email = ? WHERE id = ?').run('demo@wardrobe.internal', 'default-user');
+    }
   }
 
   // Backfill sample items with realistic image URLs if previously null

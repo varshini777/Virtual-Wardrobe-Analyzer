@@ -7,39 +7,65 @@ import { generateToken, authenticateToken } from '../middleware/auth.js';
 const router = express.Router();
 
 // POST /api/auth/register
+// POST /api/auth/register
 router.post('/register', (req, res) => {
   try {
-    const { username, name, password, seedSample = true } = req.body;
+    const { username, email, name, password, seedSample = true } = req.body;
 
-    // Validation
-    if (!username || typeof username !== 'string' || username.trim().length < 3) {
-      return res.status(400).json({ success: false, error: 'Username must be at least 3 characters long.' });
+    // Validate email if provided
+    let cleanEmail = null;
+    if (email) {
+      if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+        return res.status(400).json({ success: false, error: 'Please provide a valid email address.' });
+      }
+      cleanEmail = email.trim().toLowerCase();
+
+      const existingEmail = db.prepare('SELECT id FROM users WHERE LOWER(email) = ?').get(cleanEmail);
+      if (existingEmail) {
+        return res.status(409).json({ success: false, error: 'An account with this email already exists. Please log in.' });
+      }
     }
-    const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+
+    // Determine clean username
+    let cleanUsername = '';
+    if (username && typeof username === 'string' && username.trim().length >= 3) {
+      cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    } else if (cleanEmail) {
+      cleanUsername = cleanEmail.split('@')[0].replace(/[^a-z0-9_-]/g, '');
+      if (cleanUsername.length < 3) cleanUsername = `user_${cleanUsername}`;
+    }
+
     if (cleanUsername.length < 3) {
-      return res.status(400).json({ success: false, error: 'Username contains invalid characters (letters, numbers, underscores only).' });
+      return res.status(400).json({ success: false, error: 'Username must be at least 3 valid characters (letters, numbers, underscores).' });
     }
 
     if (!password || typeof password !== 'string' || password.length < 6) {
       return res.status(400).json({ success: false, error: 'Password must be at least 6 characters long.' });
     }
 
-    const cleanName = name && typeof name === 'string' && name.trim().length > 0 ? name.trim() : cleanUsername;
-
-    // Check unique username
-    const existing = db.prepare('SELECT id FROM users WHERE username = ?').get(cleanUsername);
-    if (existing) {
-      return res.status(409).json({ success: false, error: 'Username is already registered. Please choose another.' });
+    // Ensure username uniqueness (auto-resolve if derived from email)
+    let candidateUsername = cleanUsername;
+    let suffix = 1;
+    while (db.prepare('SELECT id FROM users WHERE username = ?').get(candidateUsername)) {
+      if (username) {
+        return res.status(409).json({ success: false, error: 'Username is already registered. Please choose another.' });
+      }
+      candidateUsername = `${cleanUsername}${suffix++}`;
     }
+    cleanUsername = candidateUsername;
+
+    const cleanName = name && typeof name === 'string' && name.trim().length > 0 
+      ? name.trim() 
+      : cleanUsername;
 
     const userId = `user-${crypto.randomUUID()}`;
     const passwordHash = bcrypt.hashSync(password, 10);
     const now = new Date().toISOString();
 
     db.prepare(`
-      INSERT INTO users (id, username, name, password_hash, created_at)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(userId, cleanUsername, cleanName, passwordHash, now);
+      INSERT INTO users (id, username, email, name, password_hash, created_at)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(userId, cleanUsername, cleanEmail, cleanName, passwordHash, now);
 
     // Initial preferences
     db.prepare(`
@@ -51,7 +77,7 @@ router.post('/register', (req, res) => {
       seedSampleWardrobe(userId);
     }
 
-    const newUser = { id: userId, username: cleanUsername, name: cleanName };
+    const newUser = { id: userId, username: cleanUsername, email: cleanEmail, name: cleanName };
     const token = generateToken(newUser);
 
     res.status(201).json({
@@ -68,25 +94,25 @@ router.post('/register', (req, res) => {
 // POST /api/auth/login
 router.post('/login', (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
+    const identifier = (email || username || '').trim().toLowerCase();
 
-    if (!username || !password) {
-      return res.status(400).json({ success: false, error: 'Username and password are required.' });
+    if (!identifier || !password) {
+      return res.status(400).json({ success: false, error: 'Email/username and password are required.' });
     }
 
-    const cleanUsername = username.trim().toLowerCase();
-    const user = db.prepare('SELECT id, username, name, password_hash FROM users WHERE username = ?').get(cleanUsername);
+    const user = db.prepare('SELECT id, username, email, name, password_hash FROM users WHERE LOWER(username) = ? OR LOWER(email) = ?').get(identifier, identifier);
 
     if (!user || !user.password_hash) {
-      return res.status(401).json({ success: false, error: 'Invalid username or password.' });
+      return res.status(401).json({ success: false, error: 'Invalid email or password.' });
     }
 
     const passwordMatches = bcrypt.compareSync(password, user.password_hash);
     if (!passwordMatches) {
-      return res.status(401).json({ success: false, error: 'Invalid username or password.' });
+      return res.status(401).json({ success: false, error: 'Invalid email or password.' });
     }
 
-    const authUser = { id: user.id, username: user.username, name: user.name };
+    const authUser = { id: user.id, username: user.username, email: user.email, name: user.name };
     const token = generateToken(authUser);
 
     res.json({
@@ -103,19 +129,19 @@ router.post('/login', (req, res) => {
 // POST /api/auth/demo - One-click access for evaluation
 router.post('/demo', (req, res) => {
   try {
-    let demoUser = db.prepare('SELECT id, username, name, password_hash FROM users WHERE id = ?').get('default-user');
+    let demoUser = db.prepare('SELECT id, username, email, name, password_hash FROM users WHERE id = ?').get('default-user');
     if (!demoUser) {
       const now = new Date().toISOString();
       const hash = bcrypt.hashSync('demo123', 10);
       db.prepare(`
-        INSERT INTO users (id, username, name, password_hash, created_at)
-        VALUES (?, ?, ?, ?, ?)
-      `).run('default-user', 'demo', 'Alex Morgan', hash, now);
-      demoUser = db.prepare('SELECT id, username, name, password_hash FROM users WHERE id = ?').get('default-user');
+        INSERT INTO users (id, username, email, name, password_hash, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run('default-user', 'demo', 'demo@wardrobe.internal', 'Alex Morgan', hash, now);
+      demoUser = db.prepare('SELECT id, username, email, name, password_hash FROM users WHERE id = ?').get('default-user');
       seedSampleWardrobe('default-user');
     }
 
-    const authUser = { id: demoUser.id, username: demoUser.username, name: demoUser.name };
+    const authUser = { id: demoUser.id, username: demoUser.username, email: demoUser.email || 'demo@wardrobe.internal', name: demoUser.name };
     const token = generateToken(authUser);
 
     res.json({
@@ -132,7 +158,7 @@ router.post('/demo', (req, res) => {
 // GET /api/auth/me - Verify active authenticated session
 router.get('/me', authenticateToken, (req, res) => {
   try {
-    const user = db.prepare('SELECT id, username, name, created_at FROM users WHERE id = ?').get(req.user.id);
+    const user = db.prepare('SELECT id, username, email, name, created_at FROM users WHERE id = ?').get(req.user.id);
     if (!user) {
       return res.status(404).json({ success: false, error: 'User profile not found.' });
     }

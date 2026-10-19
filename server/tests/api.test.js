@@ -89,6 +89,76 @@ test('Authentication - Registration, Login, Token Validation and Rejection', asy
   assert.equal(meData.user.username, testUser.username);
 });
 
+test('Email Authentication - Registration, Email Validation, Duplicate Check, and Email Login', async () => {
+  const timestamp = Date.now();
+  const emailUser = {
+    email: `fashionista_${timestamp}@wardrobe.me`,
+    name: 'Helena Vance',
+    password: 'CouturePassword2026'
+  };
+
+  // 1. Reject invalid email format
+  const invalidEmailRes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: 'not-an-email',
+      name: 'Bad Email',
+      password: 'ValidPassword123'
+    })
+  });
+  assert.equal(invalidEmailRes.status, 400);
+
+  // 2. Register with valid email
+  const regRes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...emailUser, seedSample: false })
+  });
+  assert.equal(regRes.status, 201);
+  const regData = await regRes.json();
+  assert.equal(regData.success, true);
+  assert.ok(regData.token);
+  assert.equal(regData.user.email, emailUser.email);
+  assert.equal(regData.user.name, emailUser.name);
+
+  // 3. Reject duplicate email registration
+  const dupEmailRes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...emailUser, name: 'Duplicate User' })
+  });
+  assert.equal(dupEmailRes.status, 409);
+
+  // 4. Login with email
+  const emailLoginRes = await fetch(`${baseUrl}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: emailUser.email,
+      password: emailUser.password
+    })
+  });
+  assert.equal(emailLoginRes.status, 200);
+  const loginData = await emailLoginRes.json();
+  assert.equal(loginData.success, true);
+  assert.ok(loginData.token);
+  assert.equal(loginData.user.email, emailUser.email);
+
+  // 5. Login with demo email
+  const demoEmailLoginRes = await fetch(`${baseUrl}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: 'demo@wardrobe.internal',
+      password: 'demo123'
+    })
+  });
+  assert.equal(demoEmailLoginRes.status, 200);
+  const demoData = await demoEmailLoginRes.json();
+  assert.equal(demoData.success, true);
+});
+
 test('Cross-User Data Isolation - Strict Authorization & Ownership Verification', async () => {
   // Register User A
   const userARes = await fetch(`${baseUrl}/api/auth/register`, {
