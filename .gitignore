@@ -11,6 +11,10 @@ server/data/*.db
 server/data/*.db-wal
 server/data/*.db-shm
 
+# User uploads
+server/uploads/*
+!server/uploads/.gitkeep
+
 # OS & IDE
 .DS_Store
 Thumbs.db
