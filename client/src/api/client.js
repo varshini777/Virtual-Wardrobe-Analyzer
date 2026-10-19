@@ -1,18 +1,40 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
-export function getActiveUserId() {
-  return localStorage.getItem('wardrobe_user_id') || 'default-user';
+export function getAuthToken() {
+  return localStorage.getItem('wardrobe_auth_token') || null;
 }
 
-export function setActiveUserId(userId) {
-  localStorage.setItem('wardrobe_user_id', userId);
+export function setAuthToken(token) {
+  if (token) {
+    localStorage.setItem('wardrobe_auth_token', token);
+  } else {
+    localStorage.removeItem('wardrobe_auth_token');
+  }
+}
+
+export function getStoredUser() {
+  const userJson = localStorage.getItem('wardrobe_auth_user');
+  if (!userJson) return null;
+  try {
+    return JSON.parse(userJson);
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredUser(user) {
+  if (user) {
+    localStorage.setItem('wardrobe_auth_user', JSON.stringify(user));
+  } else {
+    localStorage.removeItem('wardrobe_auth_user');
+  }
 }
 
 async function request(endpoint, options = {}) {
-  const userId = getActiveUserId();
+  const token = getAuthToken();
   const headers = {
-    'Content-Type': 'application/json',
-    'x-user-id': userId,
+    ...(options.isFormData ? {} : { 'Content-Type': 'application/json' }),
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     ...(options.headers || {})
   };
 
@@ -23,6 +45,14 @@ async function request(endpoint, options = {}) {
 
   const data = await response.json().catch(() => ({}));
 
+  if (response.status === 401) {
+    // Session expired or unauthenticated
+    setAuthToken(null);
+    setStoredUser(null);
+    window.dispatchEvent(new CustomEvent('wardrobe-auth-invalid'));
+    throw new Error(data.error || 'Authentication required. Please log in.');
+  }
+
   if (!response.ok) {
     throw new Error(data.error || `HTTP error ${response.status}: ${response.statusText}`);
   }
@@ -31,6 +61,63 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
+  // Auth
+  async login(username, password) {
+    const res = await request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password })
+    });
+    if (res.token) {
+      setAuthToken(res.token);
+      setStoredUser(res.user);
+    }
+    return res;
+  },
+
+  async register(username, name, password, seedSample = true) {
+    const res = await request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ username, name, password, seedSample })
+    });
+    if (res.token) {
+      setAuthToken(res.token);
+      setStoredUser(res.user);
+    }
+    return res;
+  },
+
+  async loginDemo() {
+    const res = await request('/auth/demo', {
+      method: 'POST'
+    });
+    if (res.token) {
+      setAuthToken(res.token);
+      setStoredUser(res.user);
+    }
+    return res;
+  },
+
+  logout() {
+    setAuthToken(null);
+    setStoredUser(null);
+    window.dispatchEvent(new CustomEvent('wardrobe-auth-change'));
+  },
+
+  async getCurrentUser() {
+    return request('/auth/me');
+  },
+
+  // Upload image
+  async uploadImage(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+    return request('/upload', {
+      method: 'POST',
+      body: formData,
+      isFormData: true
+    });
+  },
+
   // Items
   async getItems(filters = {}) {
     const params = new URLSearchParams();
@@ -122,22 +209,6 @@ export const api = {
     return request('/preferences', {
       method: 'PUT',
       body: JSON.stringify(preferences)
-    });
-  },
-
-  // Users
-  async getCurrentUser() {
-    return request('/users/current');
-  },
-
-  async getUsers() {
-    return request('/users');
-  },
-
-  async createUser(username, name, loadSample = true) {
-    return request('/users', {
-      method: 'POST',
-      body: JSON.stringify({ username, name, loadSample })
     });
   }
 };

@@ -175,9 +175,28 @@ function evaluateWeatherSuitability(item, targetWeather) {
       if (item.color.toLowerCase() === 'white') {
         return { valid: false, reason: 'White footwear easily stains in wet, muddy conditions' };
       }
+
+      // Do NOT automatically assume all leather shoes or boots are waterproof.
+      // Prioritize footwear when stored details specifically indicate waterproofness or rain suitability.
+      const itemText = `${item.name} ${item.notes || ''}`.toLowerCase();
+      const isVerifiedWaterproof = itemWeather === 'rainy' ||
+        itemText.includes('waterproof') ||
+        itemText.includes('weatherproof') ||
+        itemText.includes('water-resistant') ||
+        itemText.includes('rubber lug');
+
+      if (isVerifiedWaterproof) {
+        return { valid: true, score: 35, note: 'Water-resistant protection verified for wet weather' };
+      }
+
+      if (itemWeather === 'all weather') {
+        return { valid: true, score: 10, note: 'Standard closed footwear for damp weather' };
+      }
+      return { valid: true, score: 5, note: 'Acceptable for rainy conditions' };
     }
-    if (itemWeather === 'rainy' || ['boots', 'leather shoes', 'waterproof boots'].includes(subCategory)) {
-      return { valid: true, score: 35, note: 'Water-resistant protection for wet streets' };
+
+    if (itemWeather === 'rainy') {
+      return { valid: true, score: 25, note: 'Water-resistant outerwear for rainy days' };
     }
     if (itemWeather === 'all weather') {
       return { valid: true, score: 10, note: 'Versatile in rain' };
@@ -431,6 +450,15 @@ export function generateOutfitRecommendations({ items, weather = 'Hot', occasion
         const rawScore = baseScore + (weatherScore * 0.25) + (occasionScore * 0.4) + (colorScore * 0.5) + styleBonus;
         const normalizedScore = Math.min(99, Math.max(70, Math.round(rawScore)));
 
+        let harmonyBadge = 'Stylistically Harmonious';
+        if (colorEval.reasons?.some(r => r.toLowerCase().includes('contrast'))) {
+          harmonyBadge = 'Balanced Contrast';
+        } else if (colorEval.reasons?.some(r => r.toLowerCase().includes('preferred'))) {
+          harmonyBadge = 'Palette Aligned';
+        } else if (weatherScore >= 50) {
+          harmonyBadge = 'Climate Optimized';
+        }
+
         const explanation = generateExplanation(top, bottom, shoe, bestAccessory, weather, occasion, colorEval);
 
         candidateOutfits.push({
@@ -442,6 +470,7 @@ export function generateOutfitRecommendations({ items, weather = 'Hot', occasion
           weather,
           occasion,
           score: normalizedScore,
+          harmony_badge: harmonyBadge,
           explanation,
           highlights: [
             topWeather.note,

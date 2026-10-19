@@ -2,6 +2,7 @@ import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,7 @@ export function initDatabase() {
       id TEXT PRIMARY KEY,
       username TEXT UNIQUE NOT NULL,
       name TEXT NOT NULL,
+      password_hash TEXT,
       created_at TEXT NOT NULL
     );
 
@@ -89,14 +91,23 @@ export function initDatabase() {
     );
   `);
 
-  // Ensure default user exists
-  const existingUser = db.prepare('SELECT id FROM users WHERE id = ?').get('default-user');
-  if (!existingUser) {
-    const now = new Date().toISOString();
+  // Migration: Ensure password_hash column exists
+  const userColumns = db.prepare('PRAGMA table_info(users)').all();
+  const hasPasswordHash = userColumns.some(c => c.name === 'password_hash');
+  if (!hasPasswordHash) {
+    db.exec('ALTER TABLE users ADD COLUMN password_hash TEXT;');
+  }
+
+  // Seed / Update standard demo account
+  const defaultPasswordHash = bcrypt.hashSync('demo123', 10);
+  const now = new Date().toISOString();
+
+  const existingDefault = db.prepare('SELECT id, password_hash FROM users WHERE id = ?').get('default-user');
+  if (!existingDefault) {
     db.prepare(`
-      INSERT INTO users (id, username, name, created_at)
-      VALUES (?, ?, ?, ?)
-    `).run('default-user', 'fashionista', 'Alex Morgan', now);
+      INSERT INTO users (id, username, name, password_hash, created_at)
+      VALUES (?, ?, ?, ?, ?)
+    `).run('default-user', 'demo', 'Alex Morgan', defaultPasswordHash, now);
 
     db.prepare(`
       INSERT INTO user_preferences (user_id, favorite_colors, disliked_colors, preferred_styles, default_weather, default_occasion, updated_at)
@@ -112,24 +123,41 @@ export function initDatabase() {
     );
 
     seedSampleWardrobe('default-user');
+  } else if (!existingDefault.password_hash) {
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(defaultPasswordHash, 'default-user');
   }
+
+  // Backfill sample items with realistic image URLs if previously null
+  backfillSampleImages();
 }
 
-export function ensureUserExists(userId, name) {
-  if (!userId) return;
-  const existing = db.prepare('SELECT id FROM users WHERE id = ?').get(userId);
-  if (!existing) {
-    const now = new Date().toISOString();
-    const cleanUsername = userId.toLowerCase().replace(/[^a-z0-9_-]/g, '') || `user_${Date.now()}`;
-    db.prepare(`
-      INSERT OR IGNORE INTO users (id, username, name, created_at)
-      VALUES (?, ?, ?, ?)
-    `).run(userId, cleanUsername, name || userId, now);
+function backfillSampleImages() {
+  const updates = [
+    { id: 'item-top-1', img: '/clothing-assets/top_white_shirt.svg' },
+    { id: 'item-top-2', img: '/clothing-assets/top_navy_shirt.jpg' },
+    { id: 'item-top-3', img: '/clothing-assets/top_grey_sweater.jpg' },
+    { id: 'item-top-4', img: '/clothing-assets/top_black_tshirt.svg' },
+    { id: 'item-top-5', img: '/clothing-assets/top_olive_polo.jpg' },
+    { id: 'item-bot-1', img: '/clothing-assets/bottom_beige_chinos.jpg' },
+    { id: 'item-bot-2', img: '/clothing-assets/bottom_blue_jeans.jpg' },
+    { id: 'item-bot-3', img: '/clothing-assets/bottom_grey_trousers.jpg' },
+    { id: 'item-bot-4', img: '/clothing-assets/bottom_beige_shorts.svg' },
+    { id: 'item-sho-1', img: '/clothing-assets/shoes_white_sneakers.jpg' },
+    { id: 'item-sho-2', img: '/clothing-assets/shoes_brown_loafers.jpg' },
+    { id: 'item-sho-3', img: '/clothing-assets/shoes_black_boots.svg' },
+    { id: 'item-sho-4', img: '/clothing-assets/shoes_black_oxfords.svg' },
+    { id: 'item-acc-1', img: '/clothing-assets/accessory_brown_watch.jpg' },
+    { id: 'item-acc-2', img: '/clothing-assets/accessory_sunglasses.jpg' },
+    { id: 'item-acc-3', img: '/clothing-assets/accessory_grey_scarf.jpg' }
+  ];
 
-    db.prepare(`
-      INSERT OR IGNORE INTO user_preferences (user_id, favorite_colors, disliked_colors, preferred_styles, default_weather, default_occasion, updated_at)
-      VALUES (?, '[]', '[]', '[]', 'Hot', 'Casual', ?)
-    `).run(userId, now);
+  const stmt = db.prepare("UPDATE clothing_items SET image_url = ? WHERE id = ? AND (image_url IS NULL OR image_url = '' OR image_url NOT LIKE '/clothing-assets/%')");
+  for (const u of updates) {
+    try {
+      stmt.run(u.img, u.id);
+    } catch {
+      // Ignore if item id doesn't exist
+    }
   }
 }
 
@@ -141,7 +169,7 @@ export function seedSampleWardrobe(userId) {
   const sampleItems = [
     // Tops
     {
-      id: 'item-top-1',
+      id: `item-top-1-${userId.slice(-6)}`,
       name: 'Classic White Linen Shirt',
       category: 'Top',
       sub_category: 'Shirt',
@@ -149,10 +177,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#FFFFFF',
       weather_suitability: 'Hot',
       occasion: 'Casual',
-      notes: 'Lightweight and breathable'
+      image_url: '/clothing-assets/top_white_shirt.svg',
+      notes: 'Lightweight, airy breathable European linen'
     },
     {
-      id: 'item-top-2',
+      id: `item-top-2-${userId.slice(-6)}`,
       name: 'Navy Oxford Button-Down',
       category: 'Top',
       sub_category: 'Shirt',
@@ -160,10 +189,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#1E3A8A',
       weather_suitability: 'All Weather',
       occasion: 'Work',
-      notes: 'Structured formal cotton'
+      image_url: '/clothing-assets/top_navy_shirt.jpg',
+      notes: 'Structured formal cotton with button-down collar'
     },
     {
-      id: 'item-top-3',
+      id: `item-top-3-${userId.slice(-6)}`,
       name: 'Grey Cashmere Crewneck',
       category: 'Top',
       sub_category: 'Sweater',
@@ -171,10 +201,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#6B7280',
       weather_suitability: 'Cold',
       occasion: 'Casual',
-      notes: 'Soft warm layering piece'
+      image_url: '/clothing-assets/top_grey_sweater.jpg',
+      notes: 'Soft warm layering knit'
     },
     {
-      id: 'item-top-4',
+      id: `item-top-4-${userId.slice(-6)}`,
       name: 'Black Minimalist T-Shirt',
       category: 'Top',
       sub_category: 'T-shirt',
@@ -182,10 +213,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#111827',
       weather_suitability: 'Hot',
       occasion: 'Casual',
-      notes: 'Heavyweight organic cotton'
+      image_url: '/clothing-assets/top_black_tshirt.svg',
+      notes: 'Heavyweight organic combed cotton'
     },
     {
-      id: 'item-top-5',
+      id: `item-top-5-${userId.slice(-6)}`,
       name: 'Olive Polo Shirt',
       category: 'Top',
       sub_category: 'Polo',
@@ -193,11 +225,12 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#556B2F',
       weather_suitability: 'All Weather',
       occasion: 'Casual',
-      notes: 'Smart casual waffle knit'
+      image_url: '/clothing-assets/top_olive_polo.jpg',
+      notes: 'Smart casual textured waffle knit'
     },
     // Bottoms
     {
-      id: 'item-bot-1',
+      id: `item-bot-1-${userId.slice(-6)}`,
       name: 'Beige Stretch Chinos',
       category: 'Bottom',
       sub_category: 'Chinos',
@@ -205,10 +238,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#D4C4A8',
       weather_suitability: 'All Weather',
       occasion: 'Casual',
-      notes: 'Versatile slim-straight fit'
+      image_url: '/clothing-assets/bottom_beige_chinos.jpg',
+      notes: 'Versatile slim-straight silhouette'
     },
     {
-      id: 'item-bot-2',
+      id: `item-bot-2-${userId.slice(-6)}`,
       name: 'Dark Indigo Slim Jeans',
       category: 'Bottom',
       sub_category: 'Jeans',
@@ -216,10 +250,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#1E293B',
       weather_suitability: 'All Weather',
       occasion: 'Casual',
-      notes: 'Raw denim finish'
+      image_url: '/clothing-assets/bottom_blue_jeans.jpg',
+      notes: 'Raw denim finish with copper stitching'
     },
     {
-      id: 'item-bot-3',
+      id: `item-bot-3-${userId.slice(-6)}`,
       name: 'Charcoal Tailored Trousers',
       category: 'Bottom',
       sub_category: 'Trousers',
@@ -227,10 +262,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#374151',
       weather_suitability: 'All Weather',
       occasion: 'Work',
-      notes: 'Sharp press fold for office or formal wear'
+      image_url: '/clothing-assets/bottom_grey_trousers.jpg',
+      notes: 'Sharp center press fold for office and events'
     },
     {
-      id: 'item-bot-4',
+      id: `item-bot-4-${userId.slice(-6)}`,
       name: 'Khaki Tailored Shorts',
       category: 'Bottom',
       sub_category: 'Shorts',
@@ -238,11 +274,12 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#C2B280',
       weather_suitability: 'Hot',
       occasion: 'Casual',
-      notes: 'Chino shorts for warm sunny days'
+      image_url: '/clothing-assets/bottom_beige_shorts.svg',
+      notes: 'Chino shorts for warm summer days'
     },
     // Shoes
     {
-      id: 'item-sho-1',
+      id: `item-sho-1-${userId.slice(-6)}`,
       name: 'Crisp White Minimalist Sneakers',
       category: 'Shoes',
       sub_category: 'Sneakers',
@@ -250,10 +287,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#F8FAFC',
       weather_suitability: 'All Weather',
       occasion: 'Casual',
-      notes: 'Clean leather low-tops'
+      image_url: '/clothing-assets/shoes_white_sneakers.jpg',
+      notes: 'Clean full-grain leather low-tops'
     },
     {
-      id: 'item-sho-2',
+      id: `item-sho-2-${userId.slice(-6)}`,
       name: 'Cognac Leather Penny Loafers',
       category: 'Shoes',
       sub_category: 'Loafers',
@@ -261,10 +299,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#78350F',
       weather_suitability: 'All Weather',
       occasion: 'Work',
-      notes: 'Italian full-grain leather'
+      image_url: '/clothing-assets/shoes_brown_loafers.jpg',
+      notes: 'Italian hand-stitched leather'
     },
     {
-      id: 'item-sho-3',
+      id: `item-sho-3-${userId.slice(-6)}`,
       name: 'Waterproof Black Chelsea Boots',
       category: 'Shoes',
       sub_category: 'Boots',
@@ -272,10 +311,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#000000',
       weather_suitability: 'Rainy',
       occasion: 'Casual',
+      image_url: '/clothing-assets/shoes_black_boots.svg',
       notes: 'Weatherproof treated leather with rubber lug sole'
     },
     {
-      id: 'item-sho-4',
+      id: `item-sho-4-${userId.slice(-6)}`,
       name: 'Classic Black Oxford Shoes',
       category: 'Shoes',
       sub_category: 'Formal Shoes',
@@ -283,11 +323,12 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#18181B',
       weather_suitability: 'All Weather',
       occasion: 'Formal',
+      image_url: '/clothing-assets/shoes_black_oxfords.svg',
       notes: 'Polished calfskin for formal occasions'
     },
     // Accessories
     {
-      id: 'item-acc-1',
+      id: `item-acc-1-${userId.slice(-6)}`,
       name: 'Brown Leather Minimalist Watch',
       category: 'Accessories',
       sub_category: 'Watch',
@@ -295,10 +336,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#78350F',
       weather_suitability: 'All Weather',
       occasion: 'All Occasions',
+      image_url: '/clothing-assets/accessory_brown_watch.jpg',
       notes: 'Rose gold bezel with chestnut strap'
     },
     {
-      id: 'item-acc-2',
+      id: `item-acc-2-${userId.slice(-6)}`,
       name: 'Tortoise Shell Sunglasses',
       category: 'Accessories',
       sub_category: 'Sunglasses',
@@ -306,10 +348,11 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#451A03',
       weather_suitability: 'Hot',
       occasion: 'Casual',
-      notes: 'UV400 polarized shades'
+      image_url: '/clothing-assets/accessory_sunglasses.jpg',
+      notes: 'Polarized UV400 lenses'
     },
     {
-      id: 'item-acc-3',
+      id: `item-acc-3-${userId.slice(-6)}`,
       name: 'Charcoal Wool Ribbed Scarf',
       category: 'Accessories',
       sub_category: 'Scarf',
@@ -317,6 +360,7 @@ export function seedSampleWardrobe(userId) {
       hex_color: '#4B5563',
       weather_suitability: 'Cold',
       occasion: 'Casual',
+      image_url: '/clothing-assets/accessory_grey_scarf.jpg',
       notes: 'Cozy merino wool'
     }
   ];
@@ -324,8 +368,8 @@ export function seedSampleWardrobe(userId) {
   const stmt = db.prepare(`
     INSERT INTO clothing_items (
       id, user_id, name, category, sub_category, color, hex_color,
-      weather_suitability, occasion, notes, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      weather_suitability, occasion, image_url, notes, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   for (const item of sampleItems) {
@@ -339,6 +383,7 @@ export function seedSampleWardrobe(userId) {
       item.hex_color,
       item.weather_suitability,
       item.occasion,
+      item.image_url,
       item.notes || null,
       now,
       now

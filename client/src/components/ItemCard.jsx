@@ -1,8 +1,11 @@
-import React from 'react';
-import { Edit2, Trash2, Sun, CloudRain, Snowflake, Sparkles, Shirt } from 'lucide-react';
+import React, { useState } from 'react';
+import { Edit2, Trash2, Sun, CloudRain, Snowflake, Sparkles, Shirt, ImageOff } from 'lucide-react';
 import ColorSwatch from './ColorSwatch.jsx';
 
 export default function ItemCard({ item, onEdit, onDelete }) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
   const categoryColors = {
     Top: 'bg-indigo-50 text-indigo-700 border-indigo-200',
     Bottom: 'bg-sky-50 text-sky-700 border-sky-200',
@@ -20,55 +23,73 @@ export default function ItemCard({ item, onEdit, onDelete }) {
   const weatherConfig = weatherIcons[item.weather_suitability] || weatherIcons['All Weather'];
   const WeatherIcon = weatherConfig.icon;
 
+  const displayImage = item.image_url || '/clothing-assets/top_white_tshirt.jpg';
+
   return (
-    <div className="group relative bg-white rounded-2xl p-4 shadow-sm hover:shadow-md border border-slate-200/80 transition-all duration-200 flex flex-col justify-between">
+    <div className="group relative bg-white rounded-3xl p-4 shadow-sm hover:shadow-lg border border-slate-200/80 transition-all duration-300 flex flex-col justify-between overflow-hidden">
       <div>
-        {/* Top bar: Category & Weather badges */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${categoryColors[item.category] || 'bg-slate-100 text-slate-700'}`}>
-            {item.category}
-          </span>
-          <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full border ${weatherConfig.color}`}>
-            <WeatherIcon className="w-3 h-3" />
-            {item.weather_suitability}
-          </span>
+        {/* Prominent Fashion Catalog Product Image */}
+        <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100 mb-3.5 border border-slate-100 flex items-center justify-center">
+          {/* Skeleton placeholder while loading */}
+          {!imageLoaded && !imageError && (
+            <div className="absolute inset-0 bg-slate-100 animate-pulse flex items-center justify-center">
+              <Shirt className="w-8 h-8 text-slate-300 animate-bounce" />
+            </div>
+          )}
+
+          {!imageError ? (
+            <img
+              src={displayImage}
+              alt={item.name}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => {
+                setImageError(true);
+                setImageLoaded(true);
+              }}
+              className={`w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ${
+                imageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+              <Shirt className="w-8 h-8 text-slate-300 mb-1" />
+              <span className="text-[10px] font-medium text-slate-400">{item.sub_category}</span>
+            </div>
+          )}
+
+          {/* Weather Tag pill floating over top-right */}
+          <div className="absolute top-2.5 right-2.5">
+            <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border shadow-sm backdrop-blur-md ${weatherConfig.color}`}>
+              <WeatherIcon className="w-3 h-3" />
+              {item.weather_suitability}
+            </span>
+          </div>
+
+          {/* Category Pill floating over top-left */}
+          <div className="absolute top-2.5 left-2.5">
+            <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border shadow-sm backdrop-blur-md ${categoryColors[item.category] || 'bg-slate-100 text-slate-700'}`}>
+              {item.category}
+            </span>
+          </div>
         </div>
 
-        {/* Optional Image or Stylized Placeholder */}
-        {item.image_url ? (
-          <div className="w-full h-36 rounded-xl overflow-hidden bg-slate-50 mb-3 border border-slate-100">
-            <img
-              src={item.image_url}
-              alt={item.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
-          </div>
-        ) : (
-          <div className="w-full h-24 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100/80 mb-3 flex items-center justify-center border border-slate-100 text-slate-300">
-            <Shirt className="w-8 h-8 opacity-40 group-hover:scale-110 transition-transform" />
-          </div>
-        )}
-
-        {/* Item Info */}
-        <h3 className="font-semibold text-slate-800 text-base leading-snug line-clamp-1" title={item.name}>
+        {/* Item Information */}
+        <h3 className="font-bold text-slate-900 text-sm leading-snug line-clamp-1" title={item.name}>
           {item.name}
         </h3>
 
         <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-500">
-          <span className="font-medium text-slate-600">{item.sub_category}</span>
+          <span className="font-semibold text-slate-700">{item.sub_category}</span>
           <span>•</span>
           <div className="flex items-center gap-1.5">
             <ColorSwatch color={item.color} hex={item.hex_color} size="sm" />
-            <span>{item.color}</span>
+            <span className="capitalize">{item.color}</span>
           </div>
         </div>
 
         {/* Occasion & notes */}
         <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">
-          <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
             {item.occasion}
           </span>
           {item.notes && (
@@ -80,17 +101,17 @@ export default function ItemCard({ item, onEdit, onDelete }) {
       </div>
 
       {/* Action Footer */}
-      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end gap-1">
+      <div className="mt-3.5 pt-3 border-t border-slate-100 flex items-center justify-end gap-1">
         <button
           onClick={() => onEdit(item)}
-          className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+          className="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition"
           title="Edit item"
         >
           <Edit2 className="w-4 h-4" />
         </button>
         <button
           onClick={() => onDelete(item)}
-          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
           title="Delete item"
         >
           <Trash2 className="w-4 h-4" />

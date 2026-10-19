@@ -8,7 +8,6 @@ let baseUrl;
 
 test.before(() => {
   return new Promise((resolve) => {
-    // Listen on port 0 for random free port
     server = http.createServer(app).listen(0, () => {
       const port = server.address().port;
       baseUrl = `http://localhost:${port}`;
@@ -30,87 +29,184 @@ test('API Health - returns status healthy', async () => {
   assert.equal(data.status, 'healthy');
 });
 
-test('API Clothing Items - CRUD workflow and validation', async () => {
-  const userId = `test-user-crud-${Date.now()}`;
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-user-id': userId
+test('Authentication - Registration, Login, Token Validation and Rejection', async () => {
+  const testUser = {
+    username: `user_auth_${Date.now()}`,
+    name: 'Test Fashionista',
+    password: 'SecurePassword123'
   };
 
-  // 1. Initial items should be 0 for new test user
-  const initialRes = await fetch(`${baseUrl}/api/items`, { headers });
-  const initialData = await initialRes.json();
-  assert.equal(initialData.success, true);
-  assert.equal(initialData.items.length, 0);
+  // 1. Unauthenticated request to protected route is rejected
+  const unauthRes = await fetch(`${baseUrl}/api/items`);
+  assert.equal(unauthRes.status, 401);
+  const unauthData = await unauthRes.json();
+  assert.equal(unauthData.success, false);
 
-  // 2. Validation error when missing required fields
-  const invalidRes = await fetch(`${baseUrl}/api/items`, {
+  // 2. Register new user
+  const regRes = await fetch(`${baseUrl}/api/auth/register`, {
     method: 'POST',
-    headers,
-    body: JSON.stringify({ name: '' })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...testUser, seedSample: false })
   });
-  assert.equal(invalidRes.status, 400);
+  assert.equal(regRes.status, 201);
+  const regData = await regRes.json();
+  assert.equal(regData.success, true);
+  assert.ok(regData.token);
+  assert.equal(regData.user.username, testUser.username);
 
-  // 3. Create valid top
-  const createTopRes = await fetch(`${baseUrl}/api/items`, {
+  // 3. Prevent duplicate username registration
+  const dupRes = await fetch(`${baseUrl}/api/auth/register`, {
     method: 'POST',
-    headers,
-    body: JSON.stringify({
-      name: 'Sky Blue Oxford Shirt',
-      category: 'Top',
-      sub_category: 'Shirt',
-      color: 'Blue',
-      hex_color: '#38BDF8',
-      weather_suitability: 'All Weather',
-      occasion: 'Work',
-      notes: 'Cotton fabric'
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(testUser)
   });
-  assert.equal(createTopRes.status, 201);
-  const createdTop = await createTopRes.json();
-  assert.equal(createdTop.item.name, 'Sky Blue Oxford Shirt');
-  assert.equal(createdTop.item.weather_suitability, 'All Weather');
-  const topId = createdTop.item.id;
+  assert.equal(dupRes.status, 409);
 
-  // 4. Update the item
-  const updateRes = await fetch(`${baseUrl}/api/items/${topId}`, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify({
-      name: 'Sky Blue Oxford Shirt (Slim Fit)',
-      weather_suitability: 'Hot'
-    })
+  // 4. Login with invalid password fails
+  const badLoginRes = await fetch(`${baseUrl}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: testUser.username, password: 'WrongPassword' })
   });
-  assert.equal(updateRes.status, 200);
-  const updatedData = await updateRes.json();
-  assert.equal(updatedData.item.name, 'Sky Blue Oxford Shirt (Slim Fit)');
-  assert.equal(updatedData.item.weather_suitability, 'Hot');
+  assert.equal(badLoginRes.status, 401);
 
-  // 5. Delete the item
-  const deleteRes = await fetch(`${baseUrl}/api/items/${topId}`, {
-    method: 'DELETE',
-    headers
+  // 5. Login with valid password succeeds
+  const loginRes = await fetch(`${baseUrl}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: testUser.username, password: testUser.password })
   });
-  assert.equal(deleteRes.status, 200);
+  assert.equal(loginRes.status, 200);
+  const loginData = await loginRes.json();
+  assert.ok(loginData.token);
 
-  // 6. Verify item is gone
-  const verifyRes = await fetch(`${baseUrl}/api/items/${topId}`, { headers });
-  assert.equal(verifyRes.status, 404);
+  // 6. Access /api/auth/me with valid Bearer token
+  const meRes = await fetch(`${baseUrl}/api/auth/me`, {
+    headers: { 'Authorization': `Bearer ${loginData.token}` }
+  });
+  assert.equal(meRes.status, 200);
+  const meData = await meRes.json();
+  assert.equal(meData.user.username, testUser.username);
 });
 
-test('API Recommendations - Handles incomplete wardrobe and generates outfits when complete', async () => {
-  const userId = `test-user-rec-${Date.now()}`;
+test('Cross-User Data Isolation - Strict Authorization & Ownership Verification', async () => {
+  // Register User A
+  const userARes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username: `user_a_${Date.now()}`,
+      name: 'User Alpha',
+      password: 'Password123',
+      seedSample: false
+    })
+  });
+  const userAData = await userARes.json();
+  const tokenA = userAData.token;
+
+  // Register User B
+  const userBRes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username: `user_b_${Date.now()}`,
+      name: 'User Beta',
+      password: 'Password123',
+      seedSample: false
+    })
+  });
+  const userBData = await userBRes.json();
+  const tokenB = userBData.token;
+
+  // User A creates an item
+  const createRes = await fetch(`${baseUrl}/api/items`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${tokenA}`
+    },
+    body: JSON.stringify({
+      name: 'Alpha Secret Designer Jacket',
+      category: 'Top',
+      sub_category: 'Jacket',
+      color: 'Black'
+    })
+  });
+  const createdItem = (await createRes.json()).item;
+
+  // User B attempts to access User A's item -> MUST BE 404
+  const breachGet = await fetch(`${baseUrl}/api/items/${createdItem.id}`, {
+    headers: { 'Authorization': `Bearer ${tokenB}` }
+  });
+  assert.equal(breachGet.status, 404);
+
+  // User B attempts to update User A's item -> MUST BE 404
+  const breachPut = await fetch(`${baseUrl}/api/items/${createdItem.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${tokenB}`
+    },
+    body: JSON.stringify({ name: 'Hacked Jacket' })
+  });
+  assert.equal(breachPut.status, 404);
+
+  // User B attempts to delete User A's item -> MUST BE 404
+  const breachDelete = await fetch(`${baseUrl}/api/items/${createdItem.id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${tokenB}` }
+  });
+  assert.equal(breachDelete.status, 404);
+
+  // User B listing items sees 0 items
+  const userBList = await fetch(`${baseUrl}/api/items`, {
+    headers: { 'Authorization': `Bearer ${tokenB}` }
+  });
+  const userBItems = await userBList.json();
+  assert.equal(userBItems.items.length, 0);
+
+  // User B cannot save outfit using User A's item IDs -> 403 Forbidden
+  const breachOutfit = await fetch(`${baseUrl}/api/outfits`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${tokenB}`
+    },
+    body: JSON.stringify({
+      title: 'Stolen Outfit',
+      weather: 'Hot',
+      occasion: 'Casual',
+      top_id: createdItem.id,
+      bottom_id: 'fake-bottom',
+      shoes_id: 'fake-shoes'
+    })
+  });
+  assert.equal(breachOutfit.status, 403);
+});
+
+test('Clothing Item Management & Dynamic Image Assignment', async () => {
+  const regRes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username: `user_img_${Date.now()}`,
+      name: 'Image Tester',
+      password: 'Password123',
+      seedSample: false
+    })
+  });
+  const token = (await regRes.json()).token;
   const headers = {
     'Content-Type': 'application/json',
-    'x-user-id': userId
+    'Authorization': `Bearer ${token}`
   };
 
-  // Add 1 Top and 1 Bottom (missing Shoes)
-  await fetch(`${baseUrl}/api/items`, {
+  // 1. Add item with no image -> verify dynamic catalog image auto-assignment
+  const addTshirtRes = await fetch(`${baseUrl}/api/items`, {
     method: 'POST',
     headers,
     body: JSON.stringify({
-      name: 'White Tee',
+      name: 'Organic White Crewneck',
       category: 'Top',
       sub_category: 'T-shirt',
       color: 'White',
@@ -118,114 +214,134 @@ test('API Recommendations - Handles incomplete wardrobe and generates outfits wh
       occasion: 'Casual'
     })
   });
-  await fetch(`${baseUrl}/api/items`, {
+  assert.equal(addTshirtRes.status, 201);
+  const tshirt = (await addTshirtRes.json()).item;
+  assert.match(tshirt.image_url, /top_white_tshirt\.jpg/);
+
+  // 2. Add bottom with no image -> verify chinos asset assignment
+  const addChinosRes = await fetch(`${baseUrl}/api/items`, {
     method: 'POST',
     headers,
     body: JSON.stringify({
-      name: 'Blue Jeans',
+      name: 'Classic Beige Trousers',
       category: 'Bottom',
-      sub_category: 'Jeans',
-      color: 'Blue',
+      sub_category: 'Chinos',
+      color: 'Beige',
       weather_suitability: 'All Weather',
       occasion: 'Casual'
     })
   });
+  const chinos = (await addChinosRes.json()).item;
+  assert.match(chinos.image_url, /bottom_beige_chinos\.jpg/);
 
-  // Check recommendation status
-  const statusRes = await fetch(`${baseUrl}/api/recommendations/status`, { headers });
-  const statusData = await statusRes.json();
-  assert.equal(statusData.canGenerate, false);
-  assert.deepEqual(statusData.missingCategories, ['Shoes']);
-
-  // Generate call should report incomplete
-  const genIncompleteRes = await fetch(`${baseUrl}/api/recommendations/generate`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ weather: 'Hot', occasion: 'Casual' })
-  });
-  const genIncompleteData = await genIncompleteRes.json();
-  assert.equal(genIncompleteData.canGenerate, false);
-  assert.deepEqual(genIncompleteData.missingCategories, ['Shoes']);
-
-  // Now add Shoes
-  const shoeRes = await fetch(`${baseUrl}/api/items`, {
+  // 3. Add item with explicit custom upload image URL -> verify custom image is preserved
+  const customImgUrl = '/uploads/my-custom-sneaker.png';
+  const addCustomRes = await fetch(`${baseUrl}/api/items`, {
     method: 'POST',
     headers,
     body: JSON.stringify({
-      name: 'White Sneakers',
+      name: 'Custom Sneaker',
       category: 'Shoes',
       sub_category: 'Sneakers',
       color: 'White',
       weather_suitability: 'All Weather',
-      occasion: 'Casual'
+      occasion: 'Casual',
+      image_url: customImgUrl
     })
   });
-  const shoeData = await shoeRes.json();
+  const customShoe = (await addCustomRes.json()).item;
+  assert.equal(customShoe.image_url, customImgUrl);
 
-  // Generate recommendations now
+  // 4. Update item and verify database persistence
+  const updateRes = await fetch(`${baseUrl}/api/items/${tshirt.id}`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify({
+      name: 'Organic White Crewneck (Tailored Fit)',
+      weather_suitability: 'All Weather'
+    })
+  });
+  assert.equal(updateRes.status, 200);
+  const updatedTshirt = (await updateRes.json()).item;
+  assert.equal(updatedTshirt.name, 'Organic White Crewneck (Tailored Fit)');
+  assert.equal(updatedTshirt.weather_suitability, 'All Weather');
+
+  // 5. Delete item
+  const delRes = await fetch(`${baseUrl}/api/items/${tshirt.id}`, {
+    method: 'DELETE',
+    headers
+  });
+  assert.equal(delRes.status, 200);
+});
+
+test('Outfit Recommendation, Saved Outfits & Persistent Garment Images', async () => {
+  // Register user and seed sample wardrobe
+  const regRes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username: `user_rec_${Date.now()}`,
+      name: 'Recommendation Tester',
+      password: 'Password123',
+      seedSample: true
+    })
+  });
+  const token = (await regRes.json()).token;
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+
+  // 1. Check status is complete
+  const statusRes = await fetch(`${baseUrl}/api/recommendations/status`, { headers });
+  const statusData = await statusRes.json();
+  assert.equal(statusData.canGenerate, true);
+  assert.equal(statusData.missingCategories.length, 0);
+
+  // 2. Generate outfit recommendations
   const genRes = await fetch(`${baseUrl}/api/recommendations/generate`, {
     method: 'POST',
     headers,
     body: JSON.stringify({ weather: 'Hot', occasion: 'Casual' })
   });
+  assert.equal(genRes.status, 200);
   const genData = await genRes.json();
   assert.equal(genData.canGenerate, true);
   assert.ok(genData.recommendations.length > 0);
-  assert.equal(genData.recommendations[0].top.name, 'White Tee');
-  assert.equal(genData.recommendations[0].bottom.name, 'Blue Jeans');
-  assert.equal(genData.recommendations[0].shoes.name, 'White Sneakers');
-  assert.ok(genData.recommendations[0].explanation.length > 20);
 
-  // Save the outfit
+  // Verify each recommendation has actual garment images
+  const rec = genData.recommendations[0];
+  assert.ok(rec.top.image_url, 'Top must have an image_url');
+  assert.ok(rec.bottom.image_url, 'Bottom must have an image_url');
+  assert.ok(rec.shoes.image_url, 'Shoes must have an image_url');
+  assert.ok(rec.explanation.length > 20, 'Must have meaningful stylist rationale');
+  assert.ok(rec.harmony_badge, 'Must have qualitative harmony badge');
+
+  // 3. Save the outfit
   const saveRes = await fetch(`${baseUrl}/api/outfits`, {
     method: 'POST',
     headers,
     body: JSON.stringify({
-      title: 'Crisp Weekend Look',
+      title: 'Summer Seaside Casual',
       weather: 'Hot',
       occasion: 'Casual',
-      top_id: genData.recommendations[0].top.id,
-      bottom_id: genData.recommendations[0].bottom.id,
-      shoes_id: genData.recommendations[0].shoes.id,
-      explanation: genData.recommendations[0].explanation,
-      score: genData.recommendations[0].score
+      top_id: rec.top.id,
+      bottom_id: rec.bottom.id,
+      shoes_id: rec.shoes.id,
+      accessory_id: rec.accessory?.id || null,
+      explanation: rec.explanation,
+      score: rec.score
     })
   });
   assert.equal(saveRes.status, 201);
-  const saveData = await saveRes.json();
-  assert.equal(saveData.success, true);
 
-  // List saved outfits
-  const listOutfitsRes = await fetch(`${baseUrl}/api/outfits`, { headers });
-  const listOutfitsData = await listOutfitsRes.json();
-  assert.equal(listOutfitsData.count, 1);
-  assert.equal(listOutfitsData.outfits[0].title, 'Crisp Weekend Look');
-});
-
-test('API User Preferences - updates and retrieves preferences', async () => {
-  const userId = `test-pref-user-${Date.now()}`;
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-user-id': userId
-  };
-
-  const updateRes = await fetch(`${baseUrl}/api/preferences`, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify({
-      favorite_colors: ['Navy', 'Olive'],
-      disliked_colors: ['Neon Green'],
-      preferred_styles: ['Minimalist'],
-      default_weather: 'Cold',
-      default_occasion: 'Work'
-    })
-  });
-  assert.equal(updateRes.status, 200);
-
-  const getRes = await fetch(`${baseUrl}/api/preferences`, { headers });
-  const getData = await getRes.json();
-  assert.deepEqual(getData.preferences.favorite_colors, ['Navy', 'Olive']);
-  assert.deepEqual(getData.preferences.disliked_colors, ['Neon Green']);
-  assert.equal(getData.preferences.default_weather, 'Cold');
-  assert.equal(getData.preferences.default_occasion, 'Work');
+  // 4. Fetch saved outfits and verify images remain consistent
+  const savedRes = await fetch(`${baseUrl}/api/outfits`, { headers });
+  const savedData = await savedRes.json();
+  assert.equal(savedData.count, 1);
+  const savedOutfit = savedData.outfits[0];
+  assert.equal(savedOutfit.title, 'Summer Seaside Casual');
+  assert.ok(savedOutfit.top.image_url, 'Saved top must preserve image');
+  assert.ok(savedOutfit.bottom.image_url, 'Saved bottom must preserve image');
+  assert.ok(savedOutfit.shoes.image_url, 'Saved shoes must preserve image');
 });

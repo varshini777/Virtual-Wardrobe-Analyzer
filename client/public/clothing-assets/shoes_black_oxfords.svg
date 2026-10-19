@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#f8f9fa"/>
+      <stop offset="100%" stop-color="#e9ecef"/>
+    </radialGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.15"/>
+    </filter>
+    <linearGradient id="polishedleather" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3f3f46"/>
+      <stop offset="40%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <ellipse cx="300" cy="480" rx="190" ry="20" fill="#000000" opacity="0.09"/>
+  <g filter="url(#shadow)">
+    <!-- Formal Oxford Shoe Profile -->
+    <path d="M 160 310 C 180 300 230 330 250 330 C 270 330 340 370 440 390 C 455 410 440 430 420 430 L 140 430 C 130 410 135 340 160 310 Z" fill="url(#polishedleather)" stroke="#27272a" stroke-width="2"/>
+    <!-- Sole & Stacked Formal Heel -->
+    <path d="M 135 430 L 430 430 L 425 448 L 140 448 Z" fill="#18181b"/>
+    <rect x="140" y="445" width="55" height="15" fill="#09090b" rx="2"/>
+    <!-- Cap Toe Stitching -->
+    <path d="M 370 380 Q 380 405 400 428" stroke="#52525b" stroke-width="1.5" fill="none"/>
+    <!-- Closed Lacing Eyelet Facings -->
+    <path d="M 230 325 L 270 345" stroke="#52525b" stroke-width="2"/>
+    <line x1="240" y1="332" x2="255" y2="330" stroke="#71717a" stroke-width="2"/>
+    <line x1="245" y1="338" x2="260" y2="336" stroke="#71717a" stroke-width="2"/>
+    <line x1="250" y1="344" x2="265" y2="342" stroke="#71717a" stroke-width="2"/>
+  </g>
+</svg>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, Upload, Sparkles, AlertCircle } from 'lucide-react';
+import { X, Upload, Sparkles, AlertCircle, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { POPULAR_COLORS } from './ColorSwatch.jsx';
+import { api } from '../api/client.js';
 
 const SUB_CATEGORY_PRESETS = {
   Top: ['T-shirt', 'Shirt', 'Polo', 'Sweater', 'Hoodie', 'Jacket', 'Coat', 'Tank Top', 'Blazer'],
@@ -27,6 +28,7 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
   const [customColor, setCustomColor] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     if (item) {
@@ -89,20 +91,32 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
     }));
   };
 
-  const handleImageFileChange = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 3 * 1024 * 1024) {
-      setError('Image file must be under 3MB');
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setError('Please upload a valid JPEG, PNG, or WebP image file.');
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData(prev => ({ ...prev, image_url: reader.result }));
-    };
-    reader.readAsDataURL(file);
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image file must be under 5MB.');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      setError('');
+      const res = await api.uploadImage(file);
+      if (res.success && res.url) {
+        setFormData(prev => ({ ...prev, image_url: res.url }));
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to upload image file.');
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -139,11 +153,11 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
         {/* Modal Header */}
         <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">
+            <h3 className="text-lg font-bold text-slate-900 font-serif">
               {item ? 'Edit Clothing Item' : 'Add Clothing Item'}
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              {item ? 'Update item details and suitability rules' : 'Expand your digital wardrobe with garment specifications'}
+              {item ? 'Update item details, weather suitability, and image' : 'Add a garment to your digital closet with auto image assignment'}
             </p>
           </div>
           <button
@@ -266,13 +280,11 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
             />
           </div>
 
-          {/* Two-Column Grid: Weather Suitability & Occasion */}
+          {/* Weather Suitability & Occasion */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Weather Suitability */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1">
-                <span>Weather Suitability</span>
-                <span className="text-slate-400 font-normal lowercase">(optional)</span>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                Weather Suitability
               </label>
               <select
                 value={formData.weather_suitability}
@@ -284,10 +296,8 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
                 <option value="Cold">❄️ Cold (Chilly / Winter)</option>
                 <option value="Rainy">🌧️ Rainy (Water-Resistant)</option>
               </select>
-              <p className="text-[10px] text-slate-400 mt-1">Filters outfits appropriately per climate</p>
             </div>
 
-            {/* Occasion */}
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
                 Occasion Style
@@ -302,68 +312,88 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
                 <option value="Formal">Formal (Suits & events)</option>
                 <option value="All Occasions">All Occasions (Universal)</option>
               </select>
-              <p className="text-[10px] text-slate-400 mt-1">Guides outfit formality pairing</p>
             </div>
           </div>
 
-          {/* Optional Image */}
+          {/* Garment Image Management */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
-              Image <span className="text-slate-400 font-normal lowercase">(optional for visual display)</span>
-            </label>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
+                Garment Product Image
+              </label>
+              <span className="text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                Auto-assigned if left empty
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Paste Image URL (https://...)"
-                value={formData.image_url.startsWith('data:') ? 'Image uploaded from file' : formData.image_url}
+                placeholder="Auto-assigned catalog image or paste URL"
+                value={formData.image_url}
                 onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
                 className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900"
               />
-              <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-xl transition">
-                <Upload className="w-3.5 h-3.5" />
-                <span>Upload</span>
+              <label className="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-xl transition shadow-sm">
+                {uploadingImage ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                <span>{uploadingImage ? 'Uploading...' : 'Upload'}</span>
                 <input
                   type="file"
-                  accept="image/*"
-                  onChange={handleImageFileChange}
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleFileUpload}
                   className="hidden"
+                  disabled={uploadingImage}
                 />
               </label>
             </div>
+
             {formData.image_url && (
-              <div className="mt-2 w-14 h-14 rounded-lg overflow-hidden border border-slate-200">
-                <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+              <div className="mt-2.5 flex items-center gap-3 p-2 bg-slate-50 rounded-xl border border-slate-100">
+                <div className="w-12 h-12 rounded-lg bg-white overflow-hidden border border-slate-200 flex-shrink-0 flex items-center justify-center">
+                  <img src={formData.image_url} alt="Preview" className="w-full h-full object-contain p-1" />
+                </div>
+                <div className="text-[11px] text-slate-500">
+                  <p className="font-semibold text-slate-700">Image attached</p>
+                  <p className="truncate max-w-[280px]">{formData.image_url}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
+                  className="ml-auto text-xs text-rose-500 hover:underline"
+                >
+                  Clear
+                </button>
               </div>
             )}
           </div>
 
-          {/* Optional Notes */}
+          {/* Notes */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">
-              Notes <span className="text-slate-400 font-normal lowercase">(fabric, fit, pairing ideas)</span>
+              Garment Notes <span className="text-slate-400 font-normal lowercase">(fabric, fit, waterproof details)</span>
             </label>
             <input
               type="text"
-              placeholder="e.g. Slim fit, 100% Egyptian cotton"
+              placeholder="e.g. Slim fit, 100% Egyptian cotton, waterproof rubber sole"
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900"
             />
           </div>
 
-          {/* Submit & Cancel Buttons */}
+          {/* Actions */}
           <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              disabled={loading}
+              disabled={loading || uploadingImage}
               className="px-4 py-2.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || uploadingImage}
               className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-semibold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition shadow-md disabled:opacity-50"
             >
               {loading ? 'Saving...' : item ? 'Update Item' : 'Add to Closet'}

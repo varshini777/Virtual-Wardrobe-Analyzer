@@ -1,14 +1,17 @@
 import express from 'express';
 import { db } from '../db/database.js';
-import { getUserId } from './items.js';
+import { authenticateToken } from '../middleware/auth.js';
 import crypto from 'node:crypto';
 
 const router = express.Router();
 
-// GET /api/outfits
+// Enforce authentication on all outfit routes
+router.use(authenticateToken);
+
+// GET /api/outfits - list saved outfits for authenticated user with item image URLs
 router.get('/', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const savedOutfits = db.prepare(`
       SELECT o.*,
         t.name as top_name, t.category as top_category, t.sub_category as top_sub_category, t.color as top_color, t.hex_color as top_hex, t.image_url as top_image,
@@ -39,7 +42,7 @@ router.get('/', (req, res) => {
         sub_category: row.top_sub_category,
         color: row.top_color,
         hex_color: row.top_hex,
-        image_url: row.top_image
+        image_url: row.top_image || '/clothing-assets/top_white_tshirt.jpg'
       },
       bottom: {
         id: row.bottom_id,
@@ -48,7 +51,7 @@ router.get('/', (req, res) => {
         sub_category: row.bottom_sub_category,
         color: row.bottom_color,
         hex_color: row.bottom_hex,
-        image_url: row.bottom_image
+        image_url: row.bottom_image || '/clothing-assets/bottom_beige_chinos.jpg'
       },
       shoes: {
         id: row.shoes_id,
@@ -57,7 +60,7 @@ router.get('/', (req, res) => {
         sub_category: row.shoes_sub_category,
         color: row.shoes_color,
         hex_color: row.shoes_hex,
-        image_url: row.shoes_image
+        image_url: row.shoes_image || '/clothing-assets/shoes_white_sneakers.jpg'
       },
       accessory: row.accessory_id ? {
         id: row.accessory_id,
@@ -66,7 +69,7 @@ router.get('/', (req, res) => {
         sub_category: row.acc_sub_category,
         color: row.acc_color,
         hex_color: row.acc_hex,
-        image_url: row.acc_image
+        image_url: row.acc_image || '/clothing-assets/accessory_brown_watch.jpg'
       } : null
     }));
 
@@ -77,10 +80,10 @@ router.get('/', (req, res) => {
   }
 });
 
-// POST /api/outfits
+// POST /api/outfits - save outfit owned by authenticated user
 router.post('/', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const {
       title,
       weather,
@@ -95,6 +98,15 @@ router.post('/', (req, res) => {
 
     if (!top_id || !bottom_id || !shoes_id) {
       return res.status(400).json({ success: false, error: 'Top, Bottom, and Shoes are required to save an outfit.' });
+    }
+
+    // Security check: verify that items belong to the authenticated user
+    const topItem = db.prepare('SELECT id FROM clothing_items WHERE id = ? AND user_id = ?').get(top_id, userId);
+    const bottomItem = db.prepare('SELECT id FROM clothing_items WHERE id = ? AND user_id = ?').get(bottom_id, userId);
+    const shoeItem = db.prepare('SELECT id FROM clothing_items WHERE id = ? AND user_id = ?').get(shoes_id, userId);
+
+    if (!topItem || !bottomItem || !shoeItem) {
+      return res.status(403).json({ success: false, error: 'Cannot save outfit: One or more selected items do not belong to your closet.' });
     }
 
     const id = `outfit-${crypto.randomUUID()}`;
@@ -127,10 +139,10 @@ router.post('/', (req, res) => {
   }
 });
 
-// DELETE /api/outfits/:id
+// DELETE /api/outfits/:id - delete saved outfit strictly owned by user
 router.delete('/:id', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const existing = db.prepare('SELECT id FROM saved_outfits WHERE id = ? AND user_id = ?').get(req.params.id, userId);
     if (!existing) {
       return res.status(404).json({ success: false, error: 'Saved outfit not found' });
@@ -143,10 +155,10 @@ router.delete('/:id', (req, res) => {
   }
 });
 
-// GET /api/outfits/history
+// GET /api/outfits/history - get recommendation history for user
 router.get('/history', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const history = db.prepare(`
       SELECT * FROM recommendation_history
       WHERE user_id = ?

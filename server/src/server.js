@@ -6,11 +6,12 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { initDatabase } from './db/database.js';
 
+import authRouter from './routes/auth.js';
 import itemsRouter from './routes/items.js';
 import recommendationsRouter from './routes/recommendations.js';
 import outfitsRouter from './routes/outfits.js';
 import preferencesRouter from './routes/preferences.js';
-import usersRouter from './routes/users.js';
+import uploadRouter from './routes/upload.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,16 +23,25 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
-// Initialize DB schema & default user
+// Initialize DB schema & default demo accounts
 initDatabase();
 
 // Middleware
 app.use(cors({
-  origin: CORS_ORIGIN === '*' ? true : [CORS_ORIGIN, 'http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: CORS_ORIGIN === '*' ? true : [CORS_ORIGIN, 'http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5000'],
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Static asset directories for uploaded and catalog images
+const uploadsDir = path.resolve(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+app.use('/uploads', express.static(uploadsDir, { dotfiles: 'ignore', index: false }));
+
+const clothingAssetsDir = path.resolve(__dirname, '../public/clothing-assets');
+if (!fs.existsSync(clothingAssetsDir)) fs.mkdirSync(clothingAssetsDir, { recursive: true });
+app.use('/clothing-assets', express.static(clothingAssetsDir, { dotfiles: 'ignore', index: false }));
 
 // Request logger for visibility
 app.use((req, res, next) => {
@@ -54,19 +64,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Routes
+// API Routes
+app.use('/api/auth', authRouter);
+app.use('/api/upload', uploadRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/recommendations', recommendationsRouter);
 app.use('/api/outfits', outfitsRouter);
 app.use('/api/preferences', preferencesRouter);
-app.use('/api/users', usersRouter);
 
 // Serve static client assets in production if built
 const clientDistPath = path.resolve(__dirname, '../../client/dist');
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/clothing-assets')) {
+      return next();
+    }
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 }

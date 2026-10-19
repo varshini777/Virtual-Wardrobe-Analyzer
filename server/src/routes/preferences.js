@@ -1,13 +1,16 @@
 import express from 'express';
 import { db } from '../db/database.js';
-import { getUserId } from './items.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// GET /api/preferences
+// Enforce authentication on all preference routes
+router.use(authenticateToken);
+
+// GET /api/preferences - fetch preferences for authenticated user
 router.get('/', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     let pref = db.prepare('SELECT * FROM user_preferences WHERE user_id = ?').get(userId);
 
     if (!pref) {
@@ -37,10 +40,10 @@ router.get('/', (req, res) => {
   }
 });
 
-// PUT /api/preferences
+// PUT /api/preferences - update preferences for authenticated user
 router.put('/', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const {
       favorite_colors = [],
       disliked_colors = [],

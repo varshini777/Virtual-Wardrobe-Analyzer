@@ -2,24 +2,24 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Toast from './components/Toast.jsx';
 import ItemModal from './components/ItemModal.jsx';
+import AuthModal from './components/AuthModal.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import WardrobePage from './pages/WardrobePage.jsx';
 import RecommendationsPage from './pages/RecommendationsPage.jsx';
 import SavedOutfitsPage from './pages/SavedOutfitsPage.jsx';
 import PreferencesPage from './pages/PreferencesPage.jsx';
 
-import { api, getActiveUserId, setActiveUserId } from './api/client.js';
+import { api, getAuthToken, getStoredUser, setAuthToken, setStoredUser } from './api/client.js';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [currentUser, setCurrentUser] = useState(getStoredUser());
   const [items, setItems] = useState([]);
   const [wardrobeStatus, setWardrobeStatus] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [savedOutfits, setSavedOutfits] = useState([]);
   const [history, setHistory] = useState([]);
   const [preferences, setPreferences] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [users, setUsers] = useState([]);
 
   // Recommendation parameters state
   const [recWeather, setRecWeather] = useState('Hot');
@@ -27,6 +27,7 @@ export default function App() {
 
   // Modals & UI States
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [modalInitialCategory, setModalInitialCategory] = useState('Top');
   const [loading, setLoading] = useState(false);
@@ -40,18 +41,31 @@ export default function App() {
     }, 3500);
   };
 
-  // Load all initial data for active user
+  // Load all wardrobe data for authenticated user
   const loadData = useCallback(async () => {
+    const token = getAuthToken();
+    if (!token) {
+      // Auto-authenticate as demo user if no token exists for seamless first experience
+      try {
+        const demoRes = await api.loginDemo();
+        if (demoRes.success) {
+          setCurrentUser(demoRes.user);
+        }
+      } catch (err) {
+        setIsAuthModalOpen(true);
+        return;
+      }
+    }
+
     try {
       setLoading(true);
-      const [itemsRes, statusRes, outfitsRes, historyRes, prefRes, userRes, usersListRes] = await Promise.all([
+      const [itemsRes, statusRes, outfitsRes, historyRes, prefRes, meRes] = await Promise.all([
         api.getItems(),
         api.getWardrobeStatus(),
         api.getSavedOutfits(),
         api.getRecommendationHistory(),
         api.getPreferences(),
-        api.getCurrentUser(),
-        api.getUsers()
+        api.getCurrentUser().catch(() => null)
       ]);
 
       if (itemsRes.success) setItems(itemsRes.items || []);
@@ -63,11 +77,15 @@ export default function App() {
         if (prefRes.preferences?.default_weather) setRecWeather(prefRes.preferences.default_weather);
         if (prefRes.preferences?.default_occasion) setRecOccasion(prefRes.preferences.default_occasion);
       }
-      if (userRes.success) setCurrentUser(userRes.user);
-      if (usersListRes.success) setUsers(usersListRes.users || []);
+      if (meRes?.success) {
+        setCurrentUser(meRes.user);
+        setStoredUser(meRes.user);
+      }
     } catch (err) {
       console.error('Failed to load wardrobe data:', err);
-      showToast(err.message || 'Error connecting to backend API', 'error');
+      if (err.message?.includes('Authentication')) {
+        setIsAuthModalOpen(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -75,28 +93,33 @@ export default function App() {
 
   useEffect(() => {
     loadData();
+
+    const handleAuthInvalid = () => {
+      setCurrentUser(null);
+      setIsAuthModalOpen(true);
+    };
+
+    window.addEventListener('wardrobe-auth-invalid', handleAuthInvalid);
+    return () => {
+      window.removeEventListener('wardrobe-auth-invalid', handleAuthInvalid);
+    };
   }, [loadData]);
 
-  // Handle User switching & creation
-  const handleUserChange = async (userId) => {
-    setActiveUserId(userId);
+  const handleAuthSuccess = async (user) => {
+    setCurrentUser(user);
     setRecommendations([]);
     await loadData();
-    showToast(`Switched active profile`, 'info');
+    showToast(`Welcome back, ${user.name}!`, 'success');
   };
 
-  const handleNewUser = async (username) => {
-    try {
-      const res = await api.createUser(username, username, true);
-      if (res.success) {
-        setActiveUserId(res.user.id);
-        setRecommendations([]);
-        await loadData();
-        showToast(`Created new profile: ${res.user.name}`, 'success');
-      }
-    } catch (err) {
-      showToast(err.message || 'Failed to create user', 'error');
-    }
+  const handleLogout = () => {
+    api.logout();
+    setCurrentUser(null);
+    setItems([]);
+    setSavedOutfits([]);
+    setRecommendations([]);
+    showToast('Signed out of wardrobe profile', 'info');
+    setIsAuthModalOpen(true);
   };
 
   // Clothing Item CRUD Handlers
@@ -146,7 +169,7 @@ export default function App() {
   };
 
   const handleResetSample = async () => {
-    if (!window.confirm('Restore sample wardrobe? This will replace your current items with curated starter items.')) return;
+    if (!window.confirm('Restore sample wardrobe? This will replace your current items with 16 curated catalog pieces.')) return;
     try {
       setLoading(true);
       const res = await api.resetSampleWardrobe();
@@ -154,7 +177,7 @@ export default function App() {
         setItems(res.items || []);
         const statusRes = await api.getWardrobeStatus();
         if (statusRes.success) setWardrobeStatus(statusRes);
-        showToast('Sample wardrobe restored with 16 curated pieces');
+        showToast('Sample wardrobe restored with realistic visual catalog assets');
       }
     } catch (err) {
       showToast(err.message || 'Failed to restore sample', 'error');
@@ -193,7 +216,6 @@ export default function App() {
         setRecommendations(res.recommendations || []);
         if (res.recommendations?.length > 0) {
           showToast(`Curated ${res.recommendations.length} outfit pairings for ${weather} weather & ${occasion} occasion`);
-          // Refresh history
           const histRes = await api.getRecommendationHistory();
           if (histRes.success) setHistory(histRes.history || []);
         } else {
@@ -275,9 +297,8 @@ export default function App() {
         onSelectTab={setActiveTab}
         itemCount={items.length}
         currentUser={currentUser}
-        users={users}
-        onUserChange={handleUserChange}
-        onNewUser={handleNewUser}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main Container */}
@@ -287,9 +308,7 @@ export default function App() {
             items={items}
             wardrobeStatus={wardrobeStatus}
             savedOutfits={savedOutfits}
-            onNavigate={(tab, extra) => {
-              setActiveTab(tab);
-            }}
+            onNavigate={(tab) => setActiveTab(tab)}
             onOpenAddItem={handleOpenAddItem}
             onQuickGenerate={handleQuickGenerate}
             onEditItem={handleEditItem}
@@ -349,7 +368,7 @@ export default function App() {
             "Style is a way to say who you are without having to speak." — Rachel Zoe
           </p>
           <p className="text-[11px] text-slate-400">
-            Virtual Wardrobe Analyzer • Rule-based Fashion Recommendations • Explainable Color Harmony & Weather Suitability
+            Virtual Wardrobe Analyzer • Secure Token Authentication • Explainable Rule-Based Fashion Pairings
           </p>
         </div>
       </footer>
@@ -361,6 +380,13 @@ export default function App() {
         initialCategory={modalInitialCategory}
         onClose={() => setIsItemModalOpen(false)}
         onSave={handleSaveItem}
+      />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
       />
 
       {/* Toast Notification */}

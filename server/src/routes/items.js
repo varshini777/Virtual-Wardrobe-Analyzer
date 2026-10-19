@@ -1,20 +1,19 @@
 import express from 'express';
-import { db, seedSampleWardrobe, ensureUserExists } from '../db/database.js';
+import { db } from '../db/database.js';
+import { seedSampleWardrobe } from '../db/database.js';
+import { authenticateToken } from '../middleware/auth.js';
+import { resolveItemImage } from '../services/imageService.js';
 import crypto from 'node:crypto';
 
 const router = express.Router();
 
-// Helper to get active user ID from header or default
-export function getUserId(req) {
-  const userId = req.headers['x-user-id'] || 'default-user';
-  ensureUserExists(userId);
-  return userId;
-}
+// Apply authentication middleware to all items routes
+router.use(authenticateToken);
 
-// GET /api/items
+// GET /api/items - list items for authenticated user only
 router.get('/', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const { category, weather, occasion, search } = req.query;
 
     let query = 'SELECT * FROM clothing_items WHERE user_id = ?';
@@ -51,10 +50,10 @@ router.get('/', (req, res) => {
   }
 });
 
-// GET /api/items/:id
+// GET /api/items/:id - get single item if owned by authenticated user
 router.get('/:id', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const item = db.prepare('SELECT * FROM clothing_items WHERE id = ? AND user_id = ?').get(req.params.id, userId);
     if (!item) {
       return res.status(404).json({ success: false, error: 'Clothing item not found' });
@@ -65,10 +64,10 @@ router.get('/:id', (req, res) => {
   }
 });
 
-// POST /api/items
+// POST /api/items - add clothing item with dynamic image resolution
 router.post('/', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const {
       name,
       category,
@@ -83,17 +82,29 @@ router.post('/', (req, res) => {
 
     // Validation
     if (!name || !name.trim()) {
-      return res.status(400).json({ success: false, error: 'Item name is required' });
+      return res.status(400).json({ success: false, error: 'Item name is required.' });
     }
     if (!category || !['Top', 'Bottom', 'Shoes', 'Accessories'].includes(category)) {
-      return res.status(400).json({ success: false, error: 'Valid category (Top, Bottom, Shoes, Accessories) is required' });
+      return res.status(400).json({ success: false, error: 'Valid category (Top, Bottom, Shoes, Accessories) is required.' });
     }
     if (!sub_category || !sub_category.trim()) {
-      return res.status(400).json({ success: false, error: 'Sub-category is required' });
+      return res.status(400).json({ success: false, error: 'Sub-category is required.' });
     }
     if (!color || !color.trim()) {
-      return res.status(400).json({ success: false, error: 'Color is required' });
+      return res.status(400).json({ success: false, error: 'Color is required.' });
     }
+
+    // Dynamic image resolution: if user didn't upload/provide image, assign appropriate catalog image
+    const finalImageUrl = resolveItemImage({
+      name: name.trim(),
+      category,
+      sub_category: sub_category.trim(),
+      color: color.trim(),
+      weather_suitability,
+      occasion,
+      notes,
+      existingImageUrl: image_url
+    });
 
     const id = `item-${crypto.randomUUID()}`;
     const now = new Date().toISOString();
@@ -113,8 +124,8 @@ router.post('/', (req, res) => {
       hex_color || null,
       weather_suitability || 'All Weather',
       occasion || 'All Occasions',
-      image_url || null,
-      notes || null,
+      finalImageUrl,
+      notes ? notes.trim() : null,
       now,
       now
     );
@@ -127,10 +138,10 @@ router.post('/', (req, res) => {
   }
 });
 
-// PUT /api/items/:id
+// PUT /api/items/:id - update item owned by authenticated user
 router.put('/:id', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const existing = db.prepare('SELECT * FROM clothing_items WHERE id = ? AND user_id = ?').get(req.params.id, userId);
     if (!existing) {
       return res.status(404).json({ success: false, error: 'Clothing item not found' });
@@ -148,6 +159,26 @@ router.put('/:id', (req, res) => {
       notes
     } = req.body;
 
+    const updatedCategory = category || existing.category;
+    const updatedSub = sub_category !== undefined ? sub_category.trim() : existing.sub_category;
+    const updatedColor = color !== undefined ? color.trim() : existing.color;
+    const updatedName = name !== undefined ? name.trim() : existing.name;
+
+    let finalImageUrl = image_url !== undefined ? image_url : existing.image_url;
+    // If image was empty or needs reassignment
+    if (!finalImageUrl) {
+      finalImageUrl = resolveItemImage({
+        name: updatedName,
+        category: updatedCategory,
+        sub_category: updatedSub,
+        color: updatedColor,
+        weather_suitability: weather_suitability || existing.weather_suitability,
+        occasion: occasion || existing.occasion,
+        notes: notes !== undefined ? notes : existing.notes,
+        existingImageUrl: ''
+      });
+    }
+
     const now = new Date().toISOString();
 
     db.prepare(`
@@ -159,7 +190,7 @@ router.put('/:id', (req, res) => {
         hex_color = COALESCE(?, hex_color),
         weather_suitability = COALESCE(?, weather_suitability),
         occasion = COALESCE(?, occasion),
-        image_url = COALESCE(?, image_url),
+        image_url = ?,
         notes = COALESCE(?, notes),
         updated_at = ?
       WHERE id = ? AND user_id = ?
@@ -171,7 +202,7 @@ router.put('/:id', (req, res) => {
       hex_color !== undefined ? hex_color : null,
       weather_suitability !== undefined ? weather_suitability : null,
       occasion !== undefined ? occasion : null,
-      image_url !== undefined ? image_url : null,
+      finalImageUrl,
       notes !== undefined ? notes : null,
       now,
       req.params.id,
@@ -186,11 +217,11 @@ router.put('/:id', (req, res) => {
   }
 });
 
-// DELETE /api/items/:id
+// DELETE /api/items/:id - delete item owned by authenticated user
 router.delete('/:id', (req, res) => {
   try {
-    const userId = getUserId(req);
-    const existing = db.prepare('SELECT * FROM clothing_items WHERE id = ? AND user_id = ?').get(req.params.id, userId);
+    const userId = req.user.id;
+    const existing = db.prepare('SELECT id FROM clothing_items WHERE id = ? AND user_id = ?').get(req.params.id, userId);
     if (!existing) {
       return res.status(404).json({ success: false, error: 'Clothing item not found' });
     }
@@ -206,13 +237,11 @@ router.delete('/:id', (req, res) => {
 // POST /api/items/reset-sample
 router.post('/reset-sample', (req, res) => {
   try {
-    const userId = getUserId(req);
-    // Delete existing
+    const userId = req.user.id;
     db.prepare('DELETE FROM clothing_items WHERE user_id = ?').run(userId);
-    // Re-seed
     seedSampleWardrobe(userId);
     const items = db.prepare('SELECT * FROM clothing_items WHERE user_id = ? ORDER BY created_at DESC').all(userId);
-    res.json({ success: true, message: 'Sample wardrobe restored', count: items.length, items });
+    res.json({ success: true, message: 'Sample wardrobe restored with realistic catalog visuals', count: items.length, items });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -221,9 +250,9 @@ router.post('/reset-sample', (req, res) => {
 // DELETE /api/items/clear-all
 router.delete('/clear-all', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     db.prepare('DELETE FROM clothing_items WHERE user_id = ?').run(userId);
-    res.json({ success: true, message: 'All clothing items deleted' });
+    res.json({ success: true, message: 'All clothing items deleted from your closet' });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

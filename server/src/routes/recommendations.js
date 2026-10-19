@@ -1,15 +1,18 @@
 import express from 'express';
 import { db } from '../db/database.js';
 import { checkWardrobeCompleteness, generateOutfitRecommendations } from '../services/recommender.js';
-import { getUserId } from './items.js';
+import { authenticateToken } from '../middleware/auth.js';
 import crypto from 'node:crypto';
 
 const router = express.Router();
 
-// GET /api/recommendations/status
+// Enforce authentication on all recommendation routes
+router.use(authenticateToken);
+
+// GET /api/recommendations/status - check completeness of authenticated user's wardrobe
 router.get('/status', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const items = db.prepare('SELECT * FROM clothing_items WHERE user_id = ?').all(userId);
     const status = checkWardrobeCompleteness(items);
     res.json({ success: true, ...status });
@@ -18,13 +21,13 @@ router.get('/status', (req, res) => {
   }
 });
 
-// POST /api/recommendations/generate
+// POST /api/recommendations/generate - generate rule-based outfits with images
 router.post('/generate', (req, res) => {
   try {
-    const userId = getUserId(req);
+    const userId = req.user.id;
     const { weather = 'Hot', occasion = 'Casual', maxRecommendations = 5 } = req.body;
 
-    // Fetch user items
+    // Fetch user items strictly for authenticated user
     const items = db.prepare('SELECT * FROM clothing_items WHERE user_id = ?').all(userId);
 
     // Fetch user preferences

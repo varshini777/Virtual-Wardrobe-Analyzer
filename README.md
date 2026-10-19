@@ -6,16 +6,17 @@ A modern, functional, and responsive web application that manages your personal 
 
 ## ✨ Features
 
-### 1. Simplified Clothing Management
+### 1. Simplified Clothing Management with Dynamic Product Visuals
 - **Quick Add & Edit Modal**:
   - Item Name
   - Category: **Top**, **Bottom**, **Shoes**, or **Accessories**
-  - Sub-category: T-shirt, Shirt, Polo, Sweater, Hoodie, Jeans, Chinos, Trousers, Shorts, Sneakers, Loafers, Boots, Formal Shoes, etc.
+  - Sub-category: T-shirt, Shirt, Polo, Sweater, Hoodie, Jeans, Chinos, Trousers, Shorts, Sneakers, Loafers, Boots, Oxford Shoes, etc.
   - Color with interactive color swatches (standard fashion palette & custom colors)
   - **Weather Suitability**: *Hot*, *Cold*, *Rainy*, or *All Weather*
   - **Occasion Style**: *Casual*, *Work*, *Formal*, or *All Occasions*
-  - Optional image URL or upload for visual display
-  - Optional garment notes (fabric, fit, pairing notes)
+  - **Dynamic Studio Image Assignment**: Automatically matches garments to realistic studio catalog product assets based on sub-category, color, and attributes.
+  - **Safe User Uploads**: Supports custom garment photo uploads via `/api/upload` (5MB limit, sanitized UUID filenames, strict image MIME type validation).
+  - Optional garment notes (fabric, fit, waterproof details).
 - **Digital Closet Grid**:
   - Search by name, color, sub-category, or notes
   - Category filter tabs (*All*, *Top*, *Bottom*, *Shoes*, *Accessories*)
@@ -25,6 +26,7 @@ A modern, functional, and responsive web application that manages your personal 
 ### 2. Practical, Rule-Based Outfit Recommendation Engine
 - Generates complete ensembles: **Top + Bottom + Shoes** (+ optional **Accessory**).
 - **Zero AI / Computer Vision gimmicks**: 100% explainable, deterministic fashion rules.
+- **Visual Outfit Cards**: Displays high-fidelity product images for each individual garment in the outfit combination.
 - **Context Filters**:
   - **Weather**: *Hot* ☀️, *Cold* ❄️, *Rainy* 🌧️
   - **Occasion**: *Casual* 👕, *Work* 💼, *Formal* 👔
@@ -32,28 +34,33 @@ A modern, functional, and responsive web application that manages your personal 
   - Neutral-on-neutral base versatility (White, Black, Navy, Grey, Beige, Brown)
   - Complementary pairs (Navy & Brown, Olive & Beige, Burgundy & Grey, etc.)
   - Clashing color detection (e.g. Red + Green holiday clash, competing saturated neons)
+- **Rainy Weather Footwear Intelligence**:
+  - Prioritizes waterproof boots and closed leather shoes only when item details or suitability explicitly indicate waterproofness.
+  - Explicitly penalizes sandals, flip-flops, fabric canvas, and white footwear in rainy weather.
 - **Graceful Incomplete Wardrobe Handling**:
   - Detects if wardrobe is missing essential categories (Tops, Bottoms, or Shoes)
   - Displays a dedicated warning banner with missing items and direct "+ Add Item" CTA.
-- **Explainable Results**:
-  - Detailed, human-readable stylist explanation for why each outfit works.
-  - Compatibility match score (70% - 99%).
+- **Explainable Results & Qualitative Harmony Badges**:
+  - Detailed, human-readable stylist rationale for why each outfit works.
+  - Qualitative style indicators (*"Balanced Contrast"*, *"Stylistically Harmonious"*, *"Climate Optimized"*, *"Palette Aligned"*) instead of misleading pseudo-scientific percentages.
 - **Preference-Aware Scoring**:
   - Scores boosted for user's favorite colors (+15 pts).
   - Penalties for disliked colors.
   - Style aesthetic bonuses (Minimalist, Smart Casual, Streetwear, etc.).
 
-### 3. Persistent Storage & Private Wardrobe Isolation
-- SQLite database (`wardrobe.db`) storing clothing items, preferences, saved outfits, and recommendation history.
-- Multi-user / profile isolation via `x-user-id` header and localStorage.
-- Environment variable configuration (`.env`).
+### 3. Genuine Authentication & User Data Security
+- **Signed JWT Tokens**: Stateless, cryptographically signed JSON Web Tokens (`Authorization: Bearer <token>`).
+- **Secure Password Hashing**: Passwords hashed with `bcryptjs` (salt rounds: 10).
+- **Strict Server-Side Authorization**: Every protected endpoint derives user identity directly from the verified token—never trusting client-supplied headers.
+- **Cross-User Data Isolation**: Clothing items, preferences, saved outfits, and uploads are isolated per account with ownership checks on all mutating operations.
+- **One-Click Instant Demo**: Supports quick evaluation via the built-in demo user (`demo` / `demo123`).
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 20+ (Node.js 24 installed)
+- Node.js 20+ (Node.js 24 recommended)
 - npm or pnpm
 
 ### Installation
@@ -94,18 +101,22 @@ Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
 ## 🧪 Running Automated Tests
 
-Run the backend unit and integration test suite:
+Run the comprehensive backend unit and integration test suite:
 ```bash
 npm test
 ```
-The test suite covers:
-1. **Wardrobe Completeness Check**: Verifies missing category detection (Top, Bottom, Shoes).
-2. **Weather Suitability Rules**: Verifies hot weather excludes winter sweaters, cold weather excludes shorts, rainy weather prioritizes boots.
-3. **Occasion Formality Rules**: Verifies formal occasions exclude gym shorts and graphic tees.
-4. **Color Harmony Matrix**: Verifies contrast rules, clashing penalties, and favorite color score boosts.
-5. **API CRUD Operations**: Tests adding, editing, deleting, and fetching clothing items.
-6. **Recommendation API**: Tests generation and explainability output.
-7. **User Preferences & Isolation**: Tests profile-specific persistence.
+The test suite verifies 11 critical behaviors:
+1. **API Health**: Status and database connectivity.
+2. **Authentication**: Registration, Login, Token validation, and 401 rejection.
+3. **Cross-User Data Isolation**: Prevents unauthorized reads, updates, deletes, and cross-user outfit creation.
+4. **Clothing Item Management**: CRUD operations with dynamic image assignment.
+5. **Outfit Recommendation & Persistence**: Recommendation generation with garment images, saving, and retrieval.
+6. **Wardrobe Completeness Check**: Verifies missing category detection (Top, Bottom, Shoes).
+7. **Weather Suitability - Hot**: Excludes heavy cold garments in hot weather.
+8. **Weather Suitability - Cold**: Excludes shorts in cold weather.
+9. **Occasion Filtering - Formal**: Excludes T-shirts and shorts for formal occasions.
+10. **Color Harmony & Preferences**: Verifies contrast rules and score boosts for favorite colors.
+11. **Rainy Weather Suitability**: Prioritizes waterproof boots and penalizes inappropriate footwear.
 
 ---
 
@@ -114,13 +125,16 @@ The test suite covers:
 ```
 Virtual wardrobe Analyzer/
 ├── client/                     # Vite + React + Tailwind CSS Frontend
+│   ├── public/
+│   │   └── clothing-assets/    # Realistic studio catalog garment images
 │   ├── src/
-│   │   ├── api/client.js       # Centralized API service with user isolation
+│   │   ├── api/client.js       # Centralized API service with JWT authentication
 │   │   ├── components/         # Reusable UI components
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── ItemCard.jsx
-│   │   │   ├── ItemModal.jsx
-│   │   │   ├── OutfitCard.jsx
+│   │   │   ├── AuthModal.jsx   # Login, registration, & demo access modal
+│   │   │   ├── Navbar.jsx      # Navigation, session badge, profile management
+│   │   │   ├── ItemCard.jsx    # Garment card with 4:3 catalog visual
+│   │   │   ├── ItemModal.jsx   # Add/Edit form with upload & auto-assignment
+│   │   │   ├── OutfitCard.jsx  # Multi-garment visual grid with stylist rationale
 │   │   │   ├── MissingItemsAlert.jsx
 │   │   │   ├── ColorSwatch.jsx
 │   │   │   └── Toast.jsx
@@ -131,27 +145,29 @@ Virtual wardrobe Analyzer/
 │   │   │   ├── SavedOutfitsPage.jsx
 │   │   │   └── PreferencesPage.jsx
 │   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
-│   ├── index.html
-│   ├── tailwind.config.js
-│   ├── vite.config.js
+│   │   └── main.jsx
 │   └── package.json
 ├── server/                     # Node.js + Express + SQLite Backend
+│   ├── public/
+│   │   ├── clothing-assets/    # Static catalog image assets
+│   │   └── uploads/            # Secure user uploaded files
 │   ├── src/
-│   │   ├── db/database.js      # SQLite schema, migrations, sample wardrobe seeder
+│   │   ├── db/database.js      # SQLite schema, migrations, sample seeder & image backfill
+│   │   ├── middleware/
+│   │   │   └── auth.js         # JWT verification middleware & token generation
 │   │   ├── services/
-│   │   │   └── recommender.js  # Rule-based outfit recommendation engine
+│   │   │   ├── recommender.js  # Rule-based outfit recommendation engine
+│   │   │   └── imageService.js # Dynamic garment image resolver
 │   │   ├── routes/
-│   │   │   ├── items.js        # Clothing items CRUD
-│   │   │   ├── recommendations.js # Status & outfit generation
-│   │   │   ├── outfits.js      # Saved outfits & history
-│   │   │   ├── preferences.js  # Style & color preferences
-│   │   │   └── users.js        # User profile isolation
+│   │   │   ├── auth.js         # Register, Login, Demo, Me
+│   │   │   ├── items.js        # Clothing items CRUD (protected)
+│   │   │   ├── recommendations.js # Status & outfit generation (protected)
+│   │   │   ├── outfits.js      # Saved outfits & history (protected)
+│   │   │   ├── preferences.js  # Style & color preferences (protected)
+│   │   │   └── upload.js       # Secure file upload handler (protected)
 │   │   └── server.js           # Express app & static server
 │   ├── tests/
-│   │   ├── recommender.test.js # Engine unit tests
-│   │   └── api.test.js         # API integration tests
+│   │   └── api.test.js         # Comprehensive automated integration test suite
 │   ├── .env.example
 │   ├── .env
 │   └── package.json
@@ -163,23 +179,31 @@ Virtual wardrobe Analyzer/
 
 ## 🔌 API Reference
 
+### Authentication Endpoints (Public)
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/register` | Register new user account (`username`, `password`, `email`) |
+| `POST` | `/api/auth/login` | Login with username and password, returns JWT token |
+| `POST` | `/api/auth/demo` | Instant access with built-in demo credentials |
+| `GET` | `/api/auth/me` | Fetch authenticated user profile (requires `Bearer <token>`) |
+
+### Protected Endpoints (`Authorization: Bearer <token>`)
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/health` | Health check endpoint |
+| `POST` | `/api/upload` | Secure image upload (`multipart/form-data`) |
 | `GET` | `/api/items` | List user's clothing items (supports `?category=`, `?weather=`, `?search=`) |
-| `POST` | `/api/items` | Add a new clothing item |
+| `POST` | `/api/items` | Add a new clothing item (auto-assigns image if omitted) |
 | `GET` | `/api/items/:id` | Get single clothing item details |
 | `PUT` | `/api/items/:id` | Update a clothing item |
 | `DELETE` | `/api/items/:id` | Remove a clothing item |
-| `POST` | `/api/items/reset-sample` | Reset wardrobe to curated starter items |
-| `DELETE` | `/api/items/clear-all` | Clear all items from wardrobe |
+| `POST` | `/api/items/reset-sample` | Reset wardrobe to curated starter items with product visuals |
+| `DELETE` | `/api/items/clear-all` | Clear all items from user's wardrobe |
 | `GET` | `/api/recommendations/status` | Check wardrobe completeness & counts |
-| `POST` | `/api/recommendations/generate` | Generate rule-based outfit recommendations |
-| `GET` | `/api/outfits` | List user's saved outfits |
-| `POST` | `/api/outfits` | Save an outfit combination |
+| `POST` | `/api/recommendations/generate` | Generate rule-based outfit recommendations with item images |
+| `GET` | `/api/outfits` | List user's saved outfits with item images |
+| `POST` | `/api/outfits` | Save an outfit combination (validates item ownership) |
 | `DELETE` | `/api/outfits/:id` | Delete a saved outfit |
 | `GET` | `/api/outfits/history` | List recommendation session history |
 | `GET` | `/api/preferences` | Get user color & style preferences |
 | `PUT` | `/api/preferences` | Update user preferences |
-| `GET` | `/api/users` | List available user profiles |
-| `POST` | `/api/users` | Create/switch user profile |
