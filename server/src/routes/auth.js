@@ -3,14 +3,26 @@ import bcrypt from 'bcryptjs';
 import crypto from 'node:crypto';
 import { db, seedSampleWardrobe } from '../db/database.js';
 import { generateToken, authenticateToken } from '../middleware/auth.js';
+import { createRateLimiter } from '../middleware/rateLimit.js';
 
 const router = express.Router();
 
+const loginLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: 'Too many login attempts. Please wait 15 minutes before trying again.'
+});
+
+const registerLimiter = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  max: 15,
+  message: 'Too many registration requests. Please wait an hour before trying again.'
+});
+
 // POST /api/auth/register
-// POST /api/auth/register
-router.post('/register', (req, res) => {
+router.post('/register', registerLimiter, (req, res) => {
   try {
-    const { username, email, name, password, seedSample = true } = req.body;
+    const { username, email, name, password, seedSample = false } = req.body;
 
     // Validate email if provided
     let cleanEmail = null;
@@ -92,16 +104,21 @@ router.post('/register', (req, res) => {
 });
 
 // POST /api/auth/login
-router.post('/login', (req, res) => {
+router.post('/login', loginLimiter, (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    const identifier = (email || username || '').trim().toLowerCase();
+    const { username, email, identifier: rawId, password } = req.body;
+    const identifier = (rawId || email || username || '').trim().toLowerCase();
 
     if (!identifier || !password) {
       return res.status(400).json({ success: false, error: 'Email/username and password are required.' });
     }
 
-    const user = db.prepare('SELECT id, username, email, name, password_hash FROM users WHERE LOWER(username) = ? OR LOWER(email) = ?').get(identifier, identifier);
+    let user = null;
+    if (identifier === 'demo' || identifier === 'fashionista' || identifier === 'demo@wardrobe.internal') {
+      user = db.prepare('SELECT id, username, email, name, password_hash FROM users WHERE id = ?').get('default-user');
+    } else {
+      user = db.prepare('SELECT id, username, email, name, password_hash FROM users WHERE LOWER(username) = ? OR LOWER(email) = ?').get(identifier, identifier);
+    }
 
     if (!user || !user.password_hash) {
       return res.status(401).json({ success: false, error: 'Invalid email or password.' });

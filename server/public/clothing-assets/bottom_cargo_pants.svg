@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#f8f9fa"/>
+      <stop offset="100%" stop-color="#e9ecef"/>
+    </radialGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <ellipse cx="300" cy="515" rx="175" ry="20" fill="#000000" opacity="0.08"/>
+  <g filter="url(#shadow)">
+    
+    <path d="M 215 160 L 385 160 L 370 480 L 315 480 L 300 280 L 285 480 L 230 480 Z" fill="#556b2f" stroke="#3d501c" stroke-width="2"/>
+    <rect x="215" y="160" width="170" height="25" fill="#3d501c"/>
+    <!-- Flap Utility Pockets on Outer Thighs -->
+    <rect x="205" y="270" width="30" height="45" rx="3" fill="#3d501c" stroke="#283618" stroke-width="1.5"/>
+    <rect x="365" y="270" width="30" height="45" rx="3" fill="#3d501c" stroke="#283618" stroke-width="1.5"/>
+  
+  </g>
+</svg>

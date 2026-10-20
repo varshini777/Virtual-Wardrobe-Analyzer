@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#f8f9fa"/>
+      <stop offset="100%" stop-color="#e9ecef"/>
+    </radialGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <ellipse cx="300" cy="515" rx="175" ry="20" fill="#000000" opacity="0.08"/>
+  <g filter="url(#shadow)">
+    
+    <g transform="translate(10, 0)">
+      <path d="M 115 320 Q 170 300 230 280 L 255 330 Q 220 360 160 370 L 105 355 Z" fill="#18181b" stroke="#27272a" stroke-width="2"/>
+      <path d="M 100 355 Q 170 380 265 335 L 275 365 Q 170 410 90 385 Z" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+      <path d="M 315 320 Q 370 300 430 280 L 455 330 Q 420 360 360 370 L 305 355 Z" fill="#18181b" stroke="#27272a" stroke-width="2"/>
+      <path d="M 300 355 Q 370 380 465 335 L 475 365 Q 370 410 290 385 Z" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+    </g>
+  
+  </g>
+</svg>

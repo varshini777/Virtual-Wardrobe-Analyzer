@@ -73,13 +73,22 @@ export default function ItemCard({ item, onEdit, onDelete }) {
           </div>
         </div>
 
+        {/* Concept ID badge if present */}
+        {item.concept_id && (
+          <div className="mb-1">
+            <span className="text-[9px] font-mono font-semibold tracking-wider uppercase text-amber-800 bg-amber-50/90 px-1.5 py-0.5 rounded border border-amber-200/60 inline-block">
+              {item.concept_id}
+            </span>
+          </div>
+        )}
+
         {/* Item Information */}
-        <h3 className="font-bold text-slate-900 text-sm leading-snug line-clamp-1" title={item.name}>
+        <h3 className="font-serif font-bold text-slate-900 text-[15px] leading-snug line-clamp-1 tracking-tight" title={item.name}>
           {item.name}
         </h3>
 
-        <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-500">
-          <span className="font-semibold text-slate-700">{item.sub_category}</span>
+        <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
+          <span className="font-medium text-slate-700">{item.sub_category}</span>
           <span>•</span>
           <div className="flex items-center gap-1.5">
             <ColorSwatch color={item.color} hex={item.hex_color} size="sm" />
@@ -87,13 +96,30 @@ export default function ItemCard({ item, onEdit, onDelete }) {
           </div>
         </div>
 
-        {/* Occasion & notes */}
-        <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">
-          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+        {/* Silhouette & Cut Highlight */}
+        {item.silhouette && (
+          <p className="text-[11px] text-slate-600 font-normal mt-1.5 line-clamp-1">
+            <span className="text-slate-400 font-medium">Cut:</span> {item.silhouette}
+          </p>
+        )}
+
+        {/* Occasion, Fabric, Season, & Notes */}
+        <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
             {item.occasion}
           </span>
-          {item.notes && (
-            <span className="text-[11px] text-slate-400 italic line-clamp-1" title={item.notes}>
+          {item.fabric && (
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 border border-stone-200/60">
+              {item.fabric}
+            </span>
+          )}
+          {item.season && item.season !== 'All Seasons' && (
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200/60">
+              {item.season}
+            </span>
+          )}
+          {item.notes && !item.silhouette && (
+            <span className="text-[11px] text-slate-400 italic line-clamp-1 w-full mt-1" title={item.notes}>
               "{item.notes}"
             </span>
           )}

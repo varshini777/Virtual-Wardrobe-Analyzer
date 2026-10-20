@@ -15,6 +15,17 @@ server/data/*.db-shm
 server/uploads/*
 !server/uploads/.gitkeep
 
+# Environment files
+.env
+*.env
+server/.env
+client/.env
+
+# Backups & temporary archives
+backups/
+*.backup.*
+docs/catalog_contact_sheet.pdf
+
 # OS & IDE
 .DS_Store
 Thumbs.db

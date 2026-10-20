@@ -132,7 +132,25 @@ router.post('/', (req, res) => {
       now
     );
 
-    res.status(201).json({ success: true, message: 'Outfit saved successfully', id });
+    res.status(201).json({
+      success: true,
+      message: 'Outfit saved successfully',
+      id,
+      outfit: {
+        id,
+        user_id: userId,
+        title: outfitTitle,
+        weather: weather || 'Hot',
+        occasion: occasion || 'Casual',
+        top_id,
+        bottom_id,
+        shoes_id,
+        accessory_id: accessory_id || null,
+        explanation: explanation || 'Curated outfit combination.',
+        score,
+        created_at: now
+      }
+    });
   } catch (error) {
     console.error('Error saving outfit:', error);
     res.status(500).json({ success: false, error: error.message });

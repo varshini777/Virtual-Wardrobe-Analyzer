@@ -32,7 +32,7 @@ router.get('/current', (req, res) => {
 // POST /api/users
 router.post('/', (req, res) => {
   try {
-    const { username, name, loadSample = true } = req.body;
+    const { username, name, loadSample = false } = req.body;
     if (!username || !username.trim()) {
       return res.status(400).json({ success: false, error: 'Username is required' });
     }

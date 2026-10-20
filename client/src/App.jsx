@@ -30,6 +30,7 @@ export default function App() {
   // Recommendation parameters state
   const [recWeather, setRecWeather] = useState('Hot');
   const [recOccasion, setRecOccasion] = useState('Casual');
+  const [recSeason, setRecSeason] = useState('All Seasons');
 
   // Modals & UI States
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
@@ -74,6 +75,7 @@ export default function App() {
         setPreferences(prefRes.preferences);
         if (prefRes.preferences?.default_weather) setRecWeather(prefRes.preferences.default_weather);
         if (prefRes.preferences?.default_occasion) setRecOccasion(prefRes.preferences.default_occasion);
+        if (prefRes.preferences?.default_season) setRecSeason(prefRes.preferences.default_season);
       }
       if (meRes?.success) {
         setCurrentUser(meRes.user);
@@ -220,16 +222,32 @@ export default function App() {
   };
 
   // Recommendation Generation Handler
-  const handleGenerateRecommendations = async (weather, occasion) => {
-    setRecWeather(weather);
-    setRecOccasion(occasion);
+  const handleGenerateRecommendations = async (paramsOrWeather, occasionMaybe, seasonMaybe = 'All Seasons') => {
+    let payload = {};
+    if (typeof paramsOrWeather === 'object' && paramsOrWeather !== null) {
+      payload = paramsOrWeather;
+      setRecWeather(payload.weather || 'Hot');
+      setRecOccasion(payload.occasion || 'Casual');
+      setRecSeason(payload.season || 'All Seasons');
+    } else {
+      payload = {
+        weather: paramsOrWeather,
+        occasion: occasionMaybe,
+        season: seasonMaybe,
+        maxRecommendations: 5
+      };
+      setRecWeather(paramsOrWeather);
+      setRecOccasion(occasionMaybe);
+      setRecSeason(seasonMaybe);
+    }
+
     try {
       setRecLoading(true);
-      const res = await api.generateRecommendations(weather, occasion, 5);
+      const res = await api.generateRecommendations(payload);
       if (res.success) {
         setRecommendations(res.recommendations || []);
         if (res.recommendations?.length > 0) {
-          showToast(`Curated ${res.recommendations.length} outfit pairings for ${weather} weather & ${occasion} occasion`);
+          showToast(`Curated ${res.recommendations.length} outfit pairings for ${payload.weather || recWeather} weather and ${payload.occasion || recOccasion} occasion`);
           const histRes = await api.getRecommendationHistory();
           if (histRes.success) setHistory(histRes.history || []);
         } else {
@@ -245,9 +263,43 @@ export default function App() {
     }
   };
 
-  const handleQuickGenerate = (weather, occasion) => {
+  const handleGenerateAlternative = async (outfitId, currentContext = {}) => {
+    try {
+      setRecLoading(true);
+      const payload = {
+        weather: recWeather,
+        occasion: recOccasion,
+        season: recSeason,
+        ...currentContext,
+        alternativeTo: outfitId,
+        maxRecommendations: 1
+      };
+      const res = await api.generateRecommendations(payload);
+      if (res.success && res.recommendations?.length > 0) {
+        const alt = res.recommendations[0];
+        setRecommendations(prev => {
+          const index = prev.findIndex(o => o.id === outfitId);
+          if (index !== -1) {
+            const next = [...prev];
+            next[index] = alt;
+            return next;
+          }
+          return [alt, ...prev];
+        });
+        showToast('Fresh styling alternative curated!');
+      } else {
+        showToast(res.message || 'No additional distinct combinations found for this closet', 'info');
+      }
+    } catch (err) {
+      showToast(err.message || 'Failed to generate alternative outfit', 'error');
+    } finally {
+      setRecLoading(false);
+    }
+  };
+
+  const handleQuickGenerate = (weather, occasion, season = 'All Seasons') => {
     setActiveTab('recommendations');
-    handleGenerateRecommendations(weather, occasion);
+    handleGenerateRecommendations(weather, occasion, season);
   };
 
   // Saved Outfits Handlers
@@ -300,7 +352,7 @@ export default function App() {
   };
 
   const savedOutfitIds = new Set(
-    savedOutfits.map(o => `outfit-${o.top.id}-${o.bottom.id}-${o.shoes.id}${o.accessory ? `-${o.accessory.id}` : ''}`)
+    savedOutfits.map(o => `outfit-${o.top?.id || 'archived'}-${o.bottom?.id || 'archived'}-${o.shoes?.id || 'archived'}${o.accessory ? `-${o.accessory.id}` : ''}`)
   );
 
   // If unauthenticated, display the full-page Login or Registration page
@@ -393,10 +445,12 @@ export default function App() {
             loading={recLoading}
             weather={recWeather}
             occasion={recOccasion}
+            season={recSeason}
             wardrobeStatus={wardrobeStatus}
             preferences={preferences}
             savedOutfitIds={savedOutfitIds}
             onGenerate={handleGenerateRecommendations}
+            onGenerateAlternative={handleGenerateAlternative}
             onSaveOutfit={handleSaveOutfit}
             onOpenAddItem={handleOpenAddItem}
             onNavigatePreferences={() => setActiveTab('preferences')}
@@ -445,7 +499,7 @@ export default function App() {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        onAuthSuccess={handleAuthSuccess}
+        onAuthSuccess={handleLoginSuccess}
       />
 
       {/* Toast Notification */}

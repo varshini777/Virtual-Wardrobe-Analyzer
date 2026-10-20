@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Sliders, Check, Heart, Ban, Sparkles, Save } from 'lucide-react';
+import { Check, Heart, Ban, Sparkles, Save } from 'lucide-react';
 import { POPULAR_COLORS } from '../components/ColorSwatch.jsx';
 
 const STYLE_OPTIONS = [
-  { id: 'Casual', label: 'Casual', desc: 'Comfortable, relaxed, everyday pieces' },
-  { id: 'Smart Casual', label: 'Smart Casual', desc: 'Polished balance of formal and casual' },
-  { id: 'Formal', label: 'Formal', desc: 'Sharp tailoring, structured and elegant' },
   { id: 'Minimalist', label: 'Minimalist', desc: 'Neutral tones, clean cuts, versatile basics' },
-  { id: 'Streetwear', label: 'Streetwear', desc: 'Urban staples, expressive and modern' }
+  { id: 'Smart Casual', label: 'Smart Casual', desc: 'Polished balance of formal refinement and ease' },
+  { id: 'Classic', label: 'Classic', desc: 'Timeless, tailored, enduring menswear silhouettes' },
+  { id: 'Streetwear', label: 'Streetwear', desc: 'Urban staples, expressive and modern' },
+  { id: 'Old Money', label: 'Old Money', desc: 'Quiet luxury, linen, polo knits & loafers' }
 ];
 
 export default function PreferencesPage({
@@ -18,8 +18,6 @@ export default function PreferencesPage({
   const [favoriteColors, setFavoriteColors] = useState([]);
   const [dislikedColors, setDislikedColors] = useState([]);
   const [preferredStyles, setPreferredStyles] = useState([]);
-  const [defaultWeather, setDefaultWeather] = useState('Hot');
-  const [defaultOccasion, setDefaultOccasion] = useState('Casual');
   const [customFavInput, setCustomFavInput] = useState('');
   const [savedSuccess, setSavedSuccess] = useState(false);
 
@@ -28,8 +26,6 @@ export default function PreferencesPage({
       setFavoriteColors(preferences.favorite_colors || []);
       setDislikedColors(preferences.disliked_colors || []);
       setPreferredStyles(preferences.preferred_styles || []);
-      setDefaultWeather(preferences.default_weather || 'Hot');
-      setDefaultOccasion(preferences.default_occasion || 'Casual');
     }
   }, [preferences]);
 
@@ -38,7 +34,6 @@ export default function PreferencesPage({
       setFavoriteColors(favoriteColors.filter(c => c !== colorName));
     } else {
       setFavoriteColors([...favoriteColors, colorName]);
-      // Remove from disliked if present
       setDislikedColors(dislikedColors.filter(c => c !== colorName));
     }
   };
@@ -48,7 +43,6 @@ export default function PreferencesPage({
       setDislikedColors(dislikedColors.filter(c => c !== colorName));
     } else {
       setDislikedColors([...dislikedColors, colorName]);
-      // Remove from favorites if present
       setFavoriteColors(favoriteColors.filter(c => c !== colorName));
     }
   };
@@ -76,9 +70,7 @@ export default function PreferencesPage({
     await onSavePreferences({
       favorite_colors: favoriteColors,
       disliked_colors: dislikedColors,
-      preferred_styles: preferredStyles,
-      default_weather: defaultWeather,
-      default_occasion: defaultOccasion
+      preferred_styles: preferredStyles
     });
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
@@ -91,7 +83,7 @@ export default function PreferencesPage({
           Style & Color Preferences
         </h1>
         <p className="text-xs text-slate-500 mt-1">
-          Customize your styling profile to prioritize favorite colors, avoid disliked hues, and bias recommendations toward your aesthetic.
+          Customize your personal styling profile. Outfits generated in the Recommendation Engine will prioritize your favorite tones and style aesthetics.
         </p>
       </div>
 
@@ -103,18 +95,19 @@ export default function PreferencesPage({
             <h3 className="text-base font-bold text-slate-900">Favorite Colors</h3>
           </div>
           <p className="text-xs text-slate-500 mb-4">
-            Items featuring these colors receive an elevated compatibility score in recommendations (+15 pts).
+            Garments featuring these colors receive an elevated compatibility score in recommendations.
           </p>
 
           <div className="flex flex-wrap gap-2 mb-4">
             {POPULAR_COLORS.map((c) => {
               const isSelected = favoriteColors.includes(c.name);
+              const isGradient = c.isGradient || (c.hex && c.hex.startsWith('linear-gradient'));
               return (
                 <button
                   type="button"
                   key={c.name}
                   onClick={() => toggleFavoriteColor(c.name)}
-                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer ${
                     isSelected
                       ? 'bg-rose-50 border-rose-300 text-rose-900 ring-1 ring-rose-300'
                       : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
@@ -122,7 +115,7 @@ export default function PreferencesPage({
                 >
                   <span
                     className={`w-3.5 h-3.5 rounded-full ${c.border ? 'border border-slate-300' : ''}`}
-                    style={{ backgroundColor: c.hex }}
+                    style={isGradient ? { backgroundImage: c.hex } : { backgroundColor: c.hex }}
                   />
                   <span>{c.name}</span>
                   {isSelected && <Check className="w-3 h-3 text-rose-600" />}
@@ -143,7 +136,7 @@ export default function PreferencesPage({
             <button
               type="button"
               onClick={handleAddCustomFavorite}
-              className="px-3 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition"
+              className="px-3 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition cursor-pointer"
             >
               Add
             </button>
@@ -157,18 +150,19 @@ export default function PreferencesPage({
             <h3 className="text-base font-bold text-slate-900">Disliked Colors</h3>
           </div>
           <p className="text-xs text-slate-500 mb-4">
-            Combinations with these colors will be penalized or deprioritized in recommendations.
+            Outfits featuring these colors are deprioritized in recommendations.
           </p>
 
           <div className="flex flex-wrap gap-2">
             {POPULAR_COLORS.map((c) => {
               const isDisliked = dislikedColors.includes(c.name);
+              const isGradient = c.isGradient || (c.hex && c.hex.startsWith('linear-gradient'));
               return (
                 <button
                   type="button"
                   key={c.name}
                   onClick={() => toggleDislikedColor(c.name)}
-                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition cursor-pointer ${
                     isDisliked
                       ? 'bg-amber-50 border-amber-300 text-amber-900 ring-1 ring-amber-300'
                       : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
@@ -176,7 +170,7 @@ export default function PreferencesPage({
                 >
                   <span
                     className={`w-3.5 h-3.5 rounded-full ${c.border ? 'border border-slate-300' : ''}`}
-                    style={{ backgroundColor: c.hex }}
+                    style={isGradient ? { backgroundImage: c.hex } : { backgroundColor: c.hex }}
                   />
                   <span>{c.name}</span>
                   {isDisliked && <Check className="w-3 h-3 text-amber-600" />}
@@ -186,14 +180,14 @@ export default function PreferencesPage({
           </div>
         </div>
 
-        {/* Style Aesthetics Section */}
+        {/* Preferred Style Aesthetics Section */}
         <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm">
           <div className="flex items-center gap-2.5 mb-2">
             <Sparkles className="w-5 h-5 text-indigo-600" />
             <h3 className="text-base font-bold text-slate-900">Preferred Style Aesthetics</h3>
           </div>
           <p className="text-xs text-slate-500 mb-4">
-            Select the style paradigms that match your daily aesthetic.
+            Select the style paradigms that best match your personal taste.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -222,49 +216,6 @@ export default function PreferencesPage({
           </div>
         </div>
 
-        {/* Default Context Controls */}
-        <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm">
-          <div className="flex items-center gap-2.5 mb-2">
-            <Sliders className="w-5 h-5 text-slate-700" />
-            <h3 className="text-base font-bold text-slate-900">Default Context Filters</h3>
-          </div>
-          <p className="text-xs text-slate-500 mb-4">
-            Initial defaults selected when opening the Outfit Recommendation Engine.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Default Weather
-              </label>
-              <select
-                value={defaultWeather}
-                onChange={(e) => setDefaultWeather(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900"
-              >
-                <option value="Hot">☀️ Hot</option>
-                <option value="Cold">❄️ Cold</option>
-                <option value="Rainy">🌧️ Rainy</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Default Occasion
-              </label>
-              <select
-                value={defaultOccasion}
-                onChange={(e) => setDefaultOccasion(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900"
-              >
-                <option value="Casual">Casual</option>
-                <option value="Work">Work / Smart Casual</option>
-                <option value="Formal">Formal</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
         {/* Save Bar */}
         <div className="flex items-center justify-end gap-3 pt-2">
           {savedSuccess && (
@@ -275,7 +226,7 @@ export default function PreferencesPage({
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 px-8 py-3.5 text-xs font-bold bg-slate-900 text-white rounded-2xl hover:bg-slate-800 transition shadow-lg disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-8 py-3.5 text-xs font-bold bg-slate-900 text-white rounded-2xl hover:bg-slate-800 transition shadow-lg disabled:opacity-50 cursor-pointer"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Saving...' : 'Save Preferences'}</span>

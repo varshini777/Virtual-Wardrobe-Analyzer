@@ -16,8 +16,8 @@ router.get('/', (req, res) => {
     if (!pref) {
       const now = new Date().toISOString();
       db.prepare(`
-        INSERT INTO user_preferences (user_id, favorite_colors, disliked_colors, preferred_styles, default_weather, default_occasion, updated_at)
-        VALUES (?, '[]', '[]', '[]', 'Hot', 'Casual', ?)
+        INSERT INTO user_preferences (user_id, favorite_colors, disliked_colors, preferred_styles, default_weather, default_occasion, default_season, gender_presentation, preferred_fit, strict_occasion, strict_weather, strict_color_exclusion, updated_at)
+        VALUES (?, '[]', '[]', '[]', 'Hot', 'Casual', 'All Seasons', 'Show All', 'All', 0, 0, 0, ?)
       `).run(userId, now);
       pref = db.prepare('SELECT * FROM user_preferences WHERE user_id = ?').get(userId);
     }
@@ -31,6 +31,12 @@ router.get('/', (req, res) => {
         preferred_styles: JSON.parse(pref.preferred_styles || '[]'),
         default_weather: pref.default_weather || 'Hot',
         default_occasion: pref.default_occasion || 'Casual',
+        default_season: pref.default_season || 'All Seasons',
+        gender_presentation: pref.gender_presentation || 'Show All',
+        preferred_fit: pref.preferred_fit || 'All',
+        strict_occasion: Boolean(pref.strict_occasion),
+        strict_weather: Boolean(pref.strict_weather),
+        strict_color_exclusion: Boolean(pref.strict_color_exclusion),
         updated_at: pref.updated_at
       }
     });
@@ -49,7 +55,13 @@ router.put('/', (req, res) => {
       disliked_colors = [],
       preferred_styles = [],
       default_weather = 'Hot',
-      default_occasion = 'Casual'
+      default_occasion = 'Casual',
+      default_season = 'All Seasons',
+      gender_presentation = 'Show All',
+      preferred_fit = 'All',
+      strict_occasion = false,
+      strict_weather = false,
+      strict_color_exclusion = false
     } = req.body;
 
     const now = new Date().toISOString();
@@ -63,6 +75,12 @@ router.put('/', (req, res) => {
           preferred_styles = ?,
           default_weather = ?,
           default_occasion = ?,
+          default_season = ?,
+          gender_presentation = ?,
+          preferred_fit = ?,
+          strict_occasion = ?,
+          strict_weather = ?,
+          strict_color_exclusion = ?,
           updated_at = ?
         WHERE user_id = ?
       `).run(
@@ -71,13 +89,19 @@ router.put('/', (req, res) => {
         JSON.stringify(preferred_styles),
         default_weather,
         default_occasion,
+        default_season,
+        gender_presentation,
+        preferred_fit,
+        strict_occasion ? 1 : 0,
+        strict_weather ? 1 : 0,
+        strict_color_exclusion ? 1 : 0,
         now,
         userId
       );
     } else {
       db.prepare(`
-        INSERT INTO user_preferences (user_id, favorite_colors, disliked_colors, preferred_styles, default_weather, default_occasion, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO user_preferences (user_id, favorite_colors, disliked_colors, preferred_styles, default_weather, default_occasion, default_season, gender_presentation, preferred_fit, strict_occasion, strict_weather, strict_color_exclusion, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         userId,
         JSON.stringify(favorite_colors),
@@ -85,6 +109,12 @@ router.put('/', (req, res) => {
         JSON.stringify(preferred_styles),
         default_weather,
         default_occasion,
+        default_season,
+        gender_presentation,
+        preferred_fit,
+        strict_occasion ? 1 : 0,
+        strict_weather ? 1 : 0,
+        strict_color_exclusion ? 1 : 0,
         now
       );
     }
@@ -99,6 +129,12 @@ router.put('/', (req, res) => {
         preferred_styles,
         default_weather,
         default_occasion,
+        default_season,
+        gender_presentation,
+        preferred_fit,
+        strict_occasion: Boolean(strict_occasion),
+        strict_weather: Boolean(strict_weather),
+        strict_color_exclusion: Boolean(strict_color_exclusion),
         updated_at: now
       }
     });

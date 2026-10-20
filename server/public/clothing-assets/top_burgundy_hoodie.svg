@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#f8f9fa"/>
+      <stop offset="100%" stop-color="#e9ecef"/>
+    </radialGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <ellipse cx="300" cy="515" rx="175" ry="20" fill="#000000" opacity="0.08"/>
+  <g filter="url(#shadow)">
+    
+    <defs>
+      <linearGradient id="burgundyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#9f1239"/>
+        <stop offset="100%" stop-color="#881337"/>
+      </linearGradient>
+    </defs>
+    <!-- Sleeves & Body -->
+    <path d="M 210 160 L 135 225 L 165 275 L 210 245 L 210 475 L 390 475 L 390 245 L 435 275 L 465 225 L 390 160 Z" fill="url(#burgundyGrad)"/>
+    <!-- Kangaroo Pocket -->
+    <path d="M 240 370 L 360 370 L 380 440 L 220 440 Z" fill="#701a31" stroke="#4c0519" stroke-width="1.5"/>
+    <!-- Ribbed Hem & Cuffs -->
+    <rect x="210" y="465" width="180" height="18" fill="#4c0519" rx="3"/>
+    <!-- Hood Volume -->
+    <path d="M 220 170 Q 200 100 300 95 Q 400 100 380 170 Q 340 185 300 175 Q 260 185 220 170 Z" fill="#881337" stroke="#4c0519" stroke-width="2"/>
+    <!-- Drawstrings -->
+    <path d="M 285 180 L 280 260" stroke="#fecdd3" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 315 180 L 320 260" stroke="#fecdd3" stroke-width="3" stroke-linecap="round"/>
+  
+  </g>
+</svg>

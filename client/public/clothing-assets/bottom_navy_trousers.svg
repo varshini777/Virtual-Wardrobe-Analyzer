@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#f8f9fa"/>
+      <stop offset="100%" stop-color="#e9ecef"/>
+    </radialGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <ellipse cx="300" cy="515" rx="175" ry="20" fill="#000000" opacity="0.08"/>
+  <g filter="url(#shadow)">
+    
+    <path d="M 225 155 L 375 155 L 360 485 L 315 485 L 300 280 L 285 485 L 240 485 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.8"/>
+    <!-- Crisp Center Press Creases -->
+    <line x1="262" y1="200" x2="262" y2="485" stroke="#334155" stroke-width="1.5"/>
+    <line x1="338" y1="200" x2="338" y2="485" stroke="#334155" stroke-width="1.5"/>
+    <!-- Slanted Side Pockets -->
+    <line x1="235" y1="180" x2="255" y2="230" stroke="#0f172a" stroke-width="1.5"/>
+    <line x1="365" y1="180" x2="345" y2="230" stroke="#0f172a" stroke-width="1.5"/>
+  
+  </g>
+</svg>

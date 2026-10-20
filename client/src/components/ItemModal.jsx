@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { X, Upload, Sparkles, AlertCircle, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { X, Upload, Sparkles, AlertCircle, Image as ImageIcon, Loader2, ChevronDown, ChevronUp, ShieldCheck } from 'lucide-react';
 import { POPULAR_COLORS } from './ColorSwatch.jsx';
 import { api } from '../api/client.js';
 
 const SUB_CATEGORY_PRESETS = {
-  Top: ['T-shirt', 'Shirt', 'Polo', 'Sweater', 'Hoodie', 'Jacket', 'Coat', 'Tank Top', 'Blazer'],
-  Bottom: ['Jeans', 'Chinos', 'Trousers', 'Shorts', 'Skirt', 'Sweatpants', 'Cargo Pants'],
-  Shoes: ['Sneakers', 'Loafers', 'Formal Shoes', 'Boots', 'Sandals', 'Running Shoes', 'Oxfords'],
-  Accessories: ['Watch', 'Sunglasses', 'Belt', 'Scarf', 'Hat', 'Bag', 'Tie']
+  Top: ['T-Shirt', 'Shirt', 'Polo', 'Sweater', 'Hoodie', 'Jacket', 'Blazer', 'Other'],
+  Bottom: ['Jeans', 'Trousers', 'Chinos', 'Shorts', 'Cargo Pants', 'Joggers', 'Other'],
+  Shoes: ['Sneakers', 'Formal Shoes', 'Loafers', 'Boots', 'Sandals', 'Other'],
+  Accessories: ['Watch', 'Belt', 'Bag', 'Sunglasses', 'Cap', 'Scarf', 'Tie', 'Other']
 };
+
+const FABRIC_OPTIONS = ['Cotton', 'Linen', 'Wool', 'Cashmere', 'Denim', 'Silk', 'Leather', 'Suede', 'Knit', 'Polyester', 'Blend', 'Other'];
+const PATTERN_OPTIONS = ['Solid', 'Striped', 'Checked / Plaid', 'Textured', 'Floral', 'Graphic', 'Houndstooth', 'Polka Dot', 'Other'];
+const SEASON_OPTIONS = ['All Seasons', 'Summer', 'Winter', 'Spring', 'Autumn'];
+const OCCASION_OPTIONS = [
+  'Casual',
+  'Smart Casual',
+  'Work / Formal',
+  'Party',
+  'Sports / Active',
+  'Traditional',
+  'All Occasions'
+];
 
 export default function ItemModal({ isOpen, item, initialCategory, onClose, onSave }) {
   if (!isOpen) return null;
@@ -16,16 +29,24 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
   const [formData, setFormData] = useState({
     name: '',
     category: initialCategory || 'Top',
-    sub_category: 'T-shirt',
+    sub_category: 'T-Shirt',
     color: 'White',
     hex_color: '#FFFFFF',
+    secondary_color: '',
+    pattern: 'Solid',
+    fabric: 'Cotton',
+    style: 'Casual',
+    season: 'All Seasons',
     weather_suitability: 'All Weather',
     occasion: 'Casual',
+    silhouette: '',
+    waterproof_status: 'Non-waterproof',
     image_url: '',
     notes: ''
   });
 
   const [customColor, setCustomColor] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -38,8 +59,15 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
         sub_category: item.sub_category || '',
         color: item.color || 'White',
         hex_color: item.hex_color || '#FFFFFF',
+        secondary_color: item.secondary_color || '',
+        pattern: item.pattern || 'Solid',
+        fabric: item.fabric || 'Cotton',
+        style: item.style || 'Casual',
+        season: item.season || 'All Seasons',
         weather_suitability: item.weather_suitability || 'All Weather',
         occasion: item.occasion || 'Casual',
+        silhouette: item.silhouette || '',
+        waterproof_status: item.waterproof_status || 'Non-waterproof',
         image_url: item.image_url || '',
         notes: item.notes || ''
       });
@@ -47,20 +75,31 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
       if (!isPresetColor && item.color) {
         setCustomColor(item.color);
       }
+      if (item.secondary_color || item.pattern || item.fabric || item.season !== 'All Seasons' || item.silhouette) {
+        setShowAdvanced(true);
+      }
     } else {
       const defaultCat = initialCategory || 'Top';
       setFormData({
         name: '',
         category: defaultCat,
-        sub_category: SUB_CATEGORY_PRESETS[defaultCat]?.[0] || 'T-shirt',
+        sub_category: SUB_CATEGORY_PRESETS[defaultCat]?.[0] || 'T-Shirt',
         color: 'White',
         hex_color: '#FFFFFF',
+        secondary_color: '',
+        pattern: 'Solid',
+        fabric: defaultCat === 'Shoes' ? 'Leather' : 'Cotton',
+        style: 'Casual',
+        season: 'All Seasons',
         weather_suitability: 'All Weather',
         occasion: 'Casual',
+        silhouette: '',
+        waterproof_status: 'Non-waterproof',
         image_url: '',
         notes: ''
       });
       setCustomColor('');
+      setShowAdvanced(false);
     }
     setError('');
   }, [item, initialCategory, isOpen]);
@@ -69,7 +108,8 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
     setFormData(prev => ({
       ...prev,
       category: cat,
-      sub_category: SUB_CATEGORY_PRESETS[cat]?.[0] || ''
+      sub_category: SUB_CATEGORY_PRESETS[cat]?.[0] || '',
+      fabric: cat === 'Shoes' ? 'Leather' : prev.fabric
     }));
   };
 
@@ -147,32 +187,34 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
     }
   };
 
+  const isShoes = formData.category === 'Shoes';
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fadeIn overflow-y-auto">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden my-8 max-h-[90vh] flex flex-col">
         {/* Modal Header */}
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70 shrink-0">
           <div>
             <h3 className="text-lg font-bold text-slate-900 font-serif">
               {item ? 'Edit Clothing Item' : 'Add Clothing Item'}
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              {item ? 'Update item details, weather suitability, and image' : 'Add a garment to your digital closet with auto image assignment'}
+              {item ? 'Update garment details, weather suitability, and image' : 'Add a garment to your digital closet with auto studio image assignment'}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
           {error && (
             <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -187,7 +229,7 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
               placeholder="e.g. Classic White Linen Shirt"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition"
               required
             />
           </div>
@@ -203,13 +245,13 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
                   type="button"
                   key={cat}
                   onClick={() => handleCategoryChange(cat)}
-                  className={`py-2 text-xs font-medium rounded-xl border transition-all ${
+                  className={`py-2 text-xs font-medium rounded-xl border transition-all cursor-pointer ${
                     formData.category === cat
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
                       : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                   }`}
                 >
-                  {cat}
+                  {cat === 'Top' ? 'Tops' : cat === 'Bottom' ? 'Bottoms' : cat}
                 </button>
               ))}
             </div>
@@ -226,7 +268,7 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
                   type="button"
                   key={sub}
                   onClick={() => setFormData(prev => ({ ...prev, sub_category: sub }))}
-                  className={`px-2.5 py-1 text-xs rounded-lg border transition ${
+                  className={`px-2.5 py-1 text-xs rounded-lg border transition cursor-pointer ${
                     formData.sub_category === sub
                       ? 'bg-slate-800 text-white border-slate-800'
                       : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
@@ -245,10 +287,10 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
             />
           </div>
 
-          {/* Color Palette */}
+          {/* Primary Color Palette */}
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
-              Color <span className="text-rose-500">*</span> (Selected: <span className="text-slate-900 font-bold">{formData.color}</span>)
+              Primary Color <span className="text-rose-500">*</span> (Selected: <span className="text-slate-900 font-bold">{formData.color}</span>)
             </label>
             <div className="flex flex-wrap items-center gap-2 mb-2">
               {POPULAR_COLORS.map((c) => {
@@ -258,14 +300,14 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
                     type="button"
                     key={c.name}
                     onClick={() => handleColorPreset(c)}
-                    className={`relative w-7 h-7 rounded-full shadow-sm flex items-center justify-center transition-transform hover:scale-110 ${
+                    className={`relative w-7 h-7 rounded-full shadow-xs flex items-center justify-center transition-transform hover:scale-110 cursor-pointer ${
                       c.border ? 'border border-slate-300' : 'border border-black/10'
                     } ${isSelected ? 'ring-2 ring-offset-2 ring-slate-900 scale-110' : ''}`}
-                    style={{ backgroundColor: c.hex }}
+                    style={c.isGradient ? { backgroundImage: c.hex } : { backgroundColor: c.hex }}
                     title={c.name}
                   >
                     {isSelected && (
-                      <span className={`w-2 h-2 rounded-full ${c.name === 'White' || c.name === 'Yellow' ? 'bg-black' : 'bg-white'}`} />
+                      <span className={`w-2 h-2 rounded-full ${c.name === 'White' || c.name === 'Cream' || c.name === 'Yellow' ? 'bg-black' : 'bg-white'}`} />
                     )}
                   </button>
                 );
@@ -289,10 +331,11 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
               <select
                 value={formData.weather_suitability}
                 onChange={(e) => setFormData(prev => ({ ...prev, weather_suitability: e.target.value }))}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
               >
                 <option value="All Weather">🌤️ All Weather (Versatile)</option>
                 <option value="Hot">☀️ Hot (Warm / Summer)</option>
+                <option value="Mild">⛅ Mild (Transitional / Moderate)</option>
                 <option value="Cold">❄️ Cold (Chilly / Winter)</option>
                 <option value="Rainy">🌧️ Rainy (Water-Resistant)</option>
               </select>
@@ -305,15 +348,163 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
               <select
                 value={formData.occasion}
                 onChange={(e) => setFormData(prev => ({ ...prev, occasion: e.target.value }))}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 cursor-pointer"
               >
-                <option value="Casual">Casual (Relaxed everyday)</option>
-                <option value="Work">Work (Smart casual / office)</option>
-                <option value="Formal">Formal (Suits & events)</option>
-                <option value="All Occasions">All Occasions (Universal)</option>
+                {OCCASION_OPTIONS.map((occ) => (
+                  <option key={occ} value={occ}>{occ}</option>
+                ))}
               </select>
             </div>
           </div>
+
+          {/* Footwear-Specific Waterproof Quick-Toggle */}
+          {isShoes && (
+            <div className="p-3 bg-amber-50/60 border border-amber-200/60 rounded-2xl flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0" />
+                <div>
+                  <p className="text-xs font-semibold text-slate-800">Waterproof / Rain Protection</p>
+                  <p className="text-[11px] text-slate-500">Prioritizes this pair in rainy weather styling</p>
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                checked={
+                  formData.weather_suitability === 'Rainy' ||
+                  (formData.notes && formData.notes.toLowerCase().includes('waterproof'))
+                }
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setFormData(prev => ({
+                      ...prev,
+                      notes: prev.notes ? `${prev.notes}, waterproof` : 'waterproof construction'
+                    }));
+                  } else {
+                    setFormData(prev => ({
+                      ...prev,
+                      notes: prev.notes.replace(/,?\s*waterproof\s*(construction)?/gi, '').trim()
+                    }));
+                  }
+                }}
+                className="w-4 h-4 rounded text-slate-900 focus:ring-slate-900 accent-amber-500 cursor-pointer"
+              />
+            </div>
+          )}
+
+          {/* Toggle Advanced Fashion Details */}
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <span>{showAdvanced ? 'Hide Additional Fashion Details' : 'Add Advanced Details (Season, Fabric, Pattern, Secondary Color)'}</span>
+              {showAdvanced ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+
+          {showAdvanced && (
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-3 animate-fadeIn">
+              <div className="grid grid-cols-2 gap-3">
+                {/* Season */}
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                    Season
+                  </label>
+                  <select
+                    value={formData.season}
+                    onChange={(e) => setFormData(prev => ({ ...prev, season: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-800"
+                  >
+                    {SEASON_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+
+                {/* Fabric */}
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                    Fabric / Material
+                  </label>
+                  <select
+                    value={formData.fabric}
+                    onChange={(e) => setFormData(prev => ({ ...prev, fabric: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-800"
+                  >
+                    {FABRIC_OPTIONS.map(f => <option key={f} value={f}>{f}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                {/* Pattern */}
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                    Pattern
+                  </label>
+                  <select
+                    value={formData.pattern}
+                    onChange={(e) => setFormData(prev => ({ ...prev, pattern: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-800"
+                  >
+                    {PATTERN_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+
+                {/* Secondary Color */}
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                    Secondary Accent Color
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Gold, Navy, Beige (Optional)"
+                    value={formData.secondary_color || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, secondary_color: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-800"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                {/* Silhouette / Fit */}
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                    Silhouette / Fit
+                  </label>
+                  <select
+                    value={formData.silhouette || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, silhouette: e.target.value }))}
+                    className="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-800"
+                  >
+                    <option value="">Default Fit</option>
+                    <option value="Slim">Slim</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Relaxed">Relaxed</option>
+                    <option value="Oversized">Oversized</option>
+                    <option value="Tailored">Tailored</option>
+                    <option value="Straight-leg">Straight-leg</option>
+                    <option value="Wide-leg">Wide-leg</option>
+                  </select>
+                </div>
+
+                {/* Waterproof Status */}
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                    Waterproofing
+                  </label>
+                  <select
+                    value={formData.waterproof_status || 'Non-waterproof'}
+                    onChange={(e) => setFormData(prev => ({ ...prev, waterproof_status: e.target.value }))}
+                    className="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-800"
+                  >
+                    <option value="Non-waterproof">Non-waterproof (Standard)</option>
+                    <option value="Water-resistant">Water-resistant</option>
+                    <option value="Waterproof">Waterproof</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Garment Image Management */}
           <div>
@@ -322,7 +513,7 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
                 Garment Product Image
               </label>
               <span className="text-[11px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                Auto-assigned if left empty
+                Auto-assigned if empty
               </span>
             </div>
 
@@ -334,7 +525,7 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
                 onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
                 className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900"
               />
-              <label className="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-xl transition shadow-sm">
+              <label className="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-xl transition shadow-xs">
                 {uploadingImage ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
                 <span>{uploadingImage ? 'Uploading...' : 'Upload'}</span>
                 <input
@@ -349,7 +540,7 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
 
             {formData.image_url && (
               <div className="mt-2.5 flex items-center gap-3 p-2 bg-slate-50 rounded-xl border border-slate-100">
-                <div className="w-12 h-12 rounded-lg bg-white overflow-hidden border border-slate-200 flex-shrink-0 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-lg bg-white overflow-hidden border border-slate-200 shrink-0 flex items-center justify-center">
                   <img src={formData.image_url} alt="Preview" className="w-full h-full object-contain p-1" />
                 </div>
                 <div className="text-[11px] text-slate-500">
@@ -359,7 +550,7 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
-                  className="ml-auto text-xs text-rose-500 hover:underline"
+                  className="ml-auto text-xs text-rose-500 hover:underline cursor-pointer"
                 >
                   Clear
                 </button>
@@ -374,7 +565,7 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
             </label>
             <input
               type="text"
-              placeholder="e.g. Slim fit, 100% Egyptian cotton, waterproof rubber sole"
+              placeholder="e.g. Slim fit, 100% Egyptian cotton, waterproof rubber lug sole"
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900"
@@ -382,19 +573,19 @@ export default function ItemModal({ isOpen, item, initialCategory, onClose, onSa
           </div>
 
           {/* Actions */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3 shrink-0">
             <button
               type="button"
               onClick={onClose}
               disabled={loading || uploadingImage}
-              className="px-4 py-2.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition"
+              className="px-4 py-2.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || uploadingImage}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-semibold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition shadow-md disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-semibold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition shadow-md disabled:opacity-50 cursor-pointer"
             >
               {loading ? 'Saving...' : item ? 'Update Item' : 'Add to Closet'}
             </button>

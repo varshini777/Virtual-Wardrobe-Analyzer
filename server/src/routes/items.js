@@ -10,11 +10,11 @@ const router = express.Router();
 // Apply authentication middleware to all items routes
 router.use(authenticateToken);
 
-// GET /api/items - list items for authenticated user only
+// GET /api/items - list items for authenticated user only with search, filters, and sorting
 router.get('/', (req, res) => {
   try {
     const userId = req.user.id;
-    const { category, weather, occasion, search } = req.query;
+    const { category, sub_category, color, weather, season, occasion, search, sort = 'recently_added' } = req.query;
 
     let query = 'SELECT * FROM clothing_items WHERE user_id = ?';
     const params = [userId];
@@ -24,23 +24,47 @@ router.get('/', (req, res) => {
       params.push(category);
     }
 
+    if (sub_category && sub_category !== 'All') {
+      query += ' AND LOWER(sub_category) = LOWER(?)';
+      params.push(sub_category);
+    }
+
+    if (color && color !== 'All') {
+      query += ' AND (LOWER(color) = LOWER(?) OR LOWER(secondary_color) = LOWER(?))';
+      params.push(color, color);
+    }
+
+    if (season && season !== 'All') {
+      query += " AND (season = ? OR season = 'All Seasons' OR season IS NULL)";
+      params.push(season);
+    }
+
     if (weather && weather !== 'All') {
-      query += ' AND (weather_suitability = ? OR weather_suitability = "All Weather")';
+      query += " AND (weather_suitability = ? OR weather_suitability = 'All Weather')";
       params.push(weather);
     }
 
     if (occasion && occasion !== 'All') {
-      query += ' AND (occasion = ? OR occasion = "All Occasions")';
+      query += " AND (occasion = ? OR occasion = 'All Occasions')";
       params.push(occasion);
     }
 
     if (search) {
-      query += ' AND (LOWER(name) LIKE ? OR LOWER(color) LIKE ? OR LOWER(sub_category) LIKE ?)';
+      query += " AND (LOWER(name) LIKE ? OR LOWER(color) LIKE ? OR LOWER(sub_category) LIKE ? OR LOWER(COALESCE(fabric, '')) LIKE ? OR LOWER(COALESCE(notes, '')) LIKE ?)";
       const s = `%${search.toLowerCase()}%`;
-      params.push(s, s, s);
+      params.push(s, s, s, s, s);
     }
 
-    query += ' ORDER BY created_at DESC';
+    // Sort order
+    if (sort === 'name_asc') {
+      query += ' ORDER BY name COLLATE NOCASE ASC';
+    } else if (sort === 'name_desc') {
+      query += ' ORDER BY name COLLATE NOCASE DESC';
+    } else if (sort === 'oldest') {
+      query += ' ORDER BY created_at ASC';
+    } else {
+      query += ' ORDER BY created_at DESC';
+    }
 
     const items = db.prepare(query).all(...params);
     res.json({ success: true, count: items.length, items });
@@ -64,7 +88,7 @@ router.get('/:id', (req, res) => {
   }
 });
 
-// POST /api/items - add clothing item with dynamic image resolution
+// POST /api/items - add clothing item with dynamic image resolution and complete metadata
 router.post('/', (req, res) => {
   try {
     const userId = req.user.id;
@@ -74,10 +98,18 @@ router.post('/', (req, res) => {
       sub_category,
       color,
       hex_color,
+      secondary_color = null,
+      pattern = null,
+      fabric = null,
+      style = null,
+      season = 'All Seasons',
       weather_suitability = 'All Weather',
       occasion = 'All Occasions',
       image_url = '',
-      notes = ''
+      notes = '',
+      silhouette = null,
+      gender_presentation = 'Unisex',
+      waterproof_status = 'Unknown'
     } = req.body;
 
     // Validation
@@ -112,8 +144,11 @@ router.post('/', (req, res) => {
     db.prepare(`
       INSERT INTO clothing_items (
         id, user_id, name, category, sub_category, color, hex_color,
-        weather_suitability, occasion, image_url, notes, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        secondary_color, pattern, fabric, style, season,
+        weather_suitability, occasion, image_url, notes,
+        silhouette, gender_presentation, waterproof_status,
+        created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       id,
       userId,
@@ -122,10 +157,18 @@ router.post('/', (req, res) => {
       sub_category.trim(),
       color.trim(),
       hex_color || null,
+      secondary_color && secondary_color.trim() ? secondary_color.trim() : null,
+      pattern && pattern.trim() ? pattern.trim() : null,
+      fabric && fabric.trim() ? fabric.trim() : null,
+      style && style.trim() ? style.trim() : null,
+      season || 'All Seasons',
       weather_suitability || 'All Weather',
       occasion || 'All Occasions',
       finalImageUrl,
       notes ? notes.trim() : null,
+      silhouette ? silhouette.trim() : null,
+      gender_presentation || 'Unisex',
+      waterproof_status || 'Unknown',
       now,
       now
     );
@@ -153,10 +196,18 @@ router.put('/:id', (req, res) => {
       sub_category,
       color,
       hex_color,
+      secondary_color,
+      pattern,
+      fabric,
+      style,
+      season,
       weather_suitability,
       occasion,
       image_url,
-      notes
+      notes,
+      silhouette,
+      gender_presentation,
+      waterproof_status
     } = req.body;
 
     const updatedCategory = category || existing.category;
@@ -188,10 +239,18 @@ router.put('/:id', (req, res) => {
         sub_category = COALESCE(?, sub_category),
         color = COALESCE(?, color),
         hex_color = COALESCE(?, hex_color),
+        secondary_color = COALESCE(?, secondary_color),
+        pattern = COALESCE(?, pattern),
+        fabric = COALESCE(?, fabric),
+        style = COALESCE(?, style),
+        season = COALESCE(?, season),
         weather_suitability = COALESCE(?, weather_suitability),
         occasion = COALESCE(?, occasion),
         image_url = ?,
         notes = COALESCE(?, notes),
+        silhouette = COALESCE(?, silhouette),
+        gender_presentation = COALESCE(?, gender_presentation),
+        waterproof_status = COALESCE(?, waterproof_status),
         updated_at = ?
       WHERE id = ? AND user_id = ?
     `).run(
@@ -200,10 +259,18 @@ router.put('/:id', (req, res) => {
       sub_category !== undefined ? sub_category.trim() : null,
       color !== undefined ? color.trim() : null,
       hex_color !== undefined ? hex_color : null,
+      secondary_color !== undefined ? secondary_color : null,
+      pattern !== undefined ? pattern : null,
+      fabric !== undefined ? fabric : null,
+      style !== undefined ? style : null,
+      season !== undefined ? season : null,
       weather_suitability !== undefined ? weather_suitability : null,
       occasion !== undefined ? occasion : null,
       finalImageUrl,
       notes !== undefined ? notes : null,
+      silhouette !== undefined ? silhouette : null,
+      gender_presentation !== undefined ? gender_presentation : null,
+      waterproof_status !== undefined ? waterproof_status : null,
       now,
       req.params.id,
       userId

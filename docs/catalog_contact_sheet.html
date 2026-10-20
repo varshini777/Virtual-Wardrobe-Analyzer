@@ -1,0 +1,3948 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Virtual Wardrobe Analyzer — Catalog Contact Sheet (160 Designs)</title>
+  <style>
+    @page {
+      size: A3 landscape;
+      margin: 10mm;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f1218;
+      color: #e2e8f0;
+      padding: 24px;
+    }
+    .sheet-header {
+      border-bottom: 2px solid rgba(197, 168, 128, 0.3);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .title-group h1 {
+      font-family: Georgia, serif;
+      font-size: 32px;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+    }
+    .title-group p {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    .meta-badges {
+      display: flex;
+      gap: 12px;
+    }
+    .meta-badge {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+    .meta-badge.gold {
+      background: rgba(197, 168, 128, 0.15);
+      border-color: #c5a880;
+      color: #e2d1b8;
+      font-weight: 600;
+    }
+
+    .category-section {
+      margin-bottom: 36px;
+      page-break-before: always;
+    }
+    .category-section:first-of-type {
+      page-break-before: avoid;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+    }
+    .category-title {
+      font-family: Georgia, serif;
+      font-size: 22px;
+      color: #ffffff;
+    }
+    .category-count {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #c5a880;
+      background: rgba(197, 168, 128, 0.1);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(197, 168, 128, 0.2);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 14px;
+    }
+    .contact-card {
+      background: #171c26;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease;
+    }
+    .contact-card.is-photo {
+      border-color: rgba(197, 168, 128, 0.35);
+    }
+    .card-thumb-wrap {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      background: #f4f1ea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .card-thumb {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+    .type-pill {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .pill-photo {
+      background: #10b981;
+      color: #ffffff;
+    }
+    .pill-vector {
+      background: #64748b;
+      color: #ffffff;
+    }
+    .id-pill {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      font-size: 9px;
+      font-family: monospace;
+      font-weight: 600;
+      background: rgba(15, 23, 42, 0.85);
+      color: #94a3b8;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .card-info {
+      padding: 10px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .concept-id {
+      font-size: 10px;
+      font-family: monospace;
+      color: #c5a880;
+      margin-bottom: 2px;
+      display: block;
+    }
+    .item-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.3;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .item-meta {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .color-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .item-details {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 6px;
+      font-size: 10px;
+      color: #64748b;
+      line-height: 1.35;
+    }
+    .sil-text, .fab-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="sheet-header">
+    <div class="title-group">
+      <h1>Catalog Contact Sheet — Visual Audit</h1>
+      <p>Inspection matrix of all 160 curated garment designs across Tops, Bottoms, Shoes, and Accessories</p>
+    </div>
+    <div class="meta-badges">
+      <span class="meta-badge gold">Total Designs: 160</span>
+      <span class="meta-badge">Studio Photos: 12</span>
+      <span class="meta-badge">Bespoke Vectors: 148</span>
+    </div>
+  </header>
+
+  <main>
+    
+      <section class="category-section">
+        <div class="section-header">
+          <h2 class="category-title">Top Collection</h2>
+          <span class="category-count">56 Distinct Garment Designs</span>
+        </div>
+        <div class="contact-grid">
+          
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top_white_tshirt.jpg" alt="Heavyweight Boxy Crewneck" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">top-001</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-001</span>
+          <h4 class="item-name" title="Heavyweight Boxy Crewneck">Heavyweight Boxy Crewneck</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Boxy Relaxed with Dropped Shoulders</p>
+            <p class="fab-text"><strong>Cloth:</strong> Combed Cotton (280gsm)</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-002.png" alt="Mercerized Silk-Touch Black Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-002</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-002</span>
+          <h4 class="item-name" title="Mercerized Silk-Touch Black Tee">Mercerized Silk-Touch Black Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Tailored Slim-Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Mercerized Supima Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-003.png" alt="French Terry Mock Neck Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-003</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-003</span>
+          <h4 class="item-name" title="French Terry Mock Neck Tee">French Terry Mock Neck Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #9CA3AF;"></span>
+            <span class="color-text">Heather Grey</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Longline with Split Step Hem</p>
+            <p class="fab-text"><strong>Cloth:</strong> Loopback French Terry</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-004.png" alt="Vintage Breton Striped Sailor Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-004</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-004</span>
+          <h4 class="item-name" title="Vintage Breton Striped Sailor Tee">Vintage Breton Striped Sailor Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Classic Parisian Straight Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Carded Slub Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-005.png" alt="Asymmetric Raw-Hem Drape Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-005</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-005</span>
+          <h4 class="item-name" title="Asymmetric Raw-Hem Drape Tee">Asymmetric Raw-Hem Drape Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Avant-Garde Draped Oversized</p>
+            <p class="fab-text"><strong>Cloth:</strong> Modal Cotton Jersey</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-006.png" alt="Dual-Tone Panelled Colorblock Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-006</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-006</span>
+          <h4 class="item-name" title="Dual-Tone Panelled Colorblock Tee">Dual-Tone Panelled Colorblock Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sport-Luxe Relaxed</p>
+            <p class="fab-text"><strong>Cloth:</strong> Technical Micro-Mesh Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-007.png" alt="Thermal Waffle Textured Longsleeve" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-007</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-007</span>
+          <h4 class="item-name" title="Thermal Waffle Textured Longsleeve">Thermal Waffle Textured Longsleeve</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #9CA3AF;"></span>
+            <span class="color-text">Heather Grey</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Athletic Slim Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Honeycomb Thermal Knit</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-008.png" alt="Japanese Loopwheel Pocket Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-008</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-008</span>
+          <h4 class="item-name" title="Japanese Loopwheel Pocket Tee">Japanese Loopwheel Pocket Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #F5F5F4;"></span>
+            <span class="color-text">Ecru</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Vintage Tubular Fit (No Side Seams)</p>
+            <p class="fab-text"><strong>Cloth:</strong> Tubular Loopwheel Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-009.png" alt="Cropped Boxy Heavy-Stitch Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-009</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-009</span>
+          <h4 class="item-name" title="Cropped Boxy Heavy-Stitch Tee">Cropped Boxy Heavy-Stitch Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #C2410C;"></span>
+            <span class="color-text">Clay</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Boxy Cropped at Waistband</p>
+            <p class="fab-text"><strong>Cloth:</strong> Open-End Cotton Drill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-010.png" alt="Raglan Sleeve Baseball Henley" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-010</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-010</span>
+          <h4 class="item-name" title="Raglan Sleeve Baseball Henley">Raglan Sleeve Baseball Henley</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #881337;"></span>
+            <span class="color-text">Burgundy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Ergonomic Athletic Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Slubbed Cotton Melange</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-011.png" alt="Embroidered Collarless Minimal Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-011</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-011</span>
+          <h4 class="item-name" title="Embroidered Collarless Minimal Tee">Embroidered Collarless Minimal Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #84CC16;"></span>
+            <span class="color-text">Sage</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Clean-Line</p>
+            <p class="fab-text"><strong>Cloth:</strong> Heavyweight Bamboo Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-012.png" alt="Ribbed Sleeveless High-Neck Muscle Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-012</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-012</span>
+          <h4 class="item-name" title="Ribbed Sleeveless High-Neck Muscle Tee">Ribbed Sleeveless High-Neck Muscle Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Fitted Sculptural</p>
+            <p class="fab-text"><strong>Cloth:</strong> Wide-Rib Cotton Elastane</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-013.png" alt="Vintage Acid-Wash Distressed Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-013</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-013</span>
+          <h4 class="item-name" title="Vintage Acid-Wash Distressed Tee">Vintage Acid-Wash Distressed Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Grunge Boxy</p>
+            <p class="fab-text"><strong>Cloth:</strong> Enzyme-Washed Jersey</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-014.png" alt="Mock Layered Double-Sleeve Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-014</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-014</span>
+          <h4 class="item-name" title="Mock Layered Double-Sleeve Tee">Mock Layered Double-Sleeve Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Layered Skater Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Double-Face Cotton Knit</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-015.png" alt="Origami Fold Geometric Pocket Tee" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-015</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-015</span>
+          <h4 class="item-name" title="Origami Fold Geometric Pocket Tee">Origami Fold Geometric Pocket Tee</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #A8A29E;"></span>
+            <span class="color-text">Khaki</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Modern Architectonic</p>
+            <p class="fab-text"><strong>Cloth:</strong> Crisp Poplin & Jersey Blend</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/navy_oxford_shirt.jpg" alt="Classic Oxford Cloth Button-Down" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">top-016</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-016</span>
+          <h4 class="item-name" title="Classic Oxford Cloth Button-Down">Classic Oxford Cloth Button-Down</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Regular Tailored with Box Pleat</p>
+            <p class="fab-text"><strong>Cloth:</strong> Two-Ply Heavy Oxford Weave</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-017.png" alt="Open-Collar Resort Silk Shirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-017</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-017</span>
+          <h4 class="item-name" title="Open-Collar Resort Silk Shirt">Open-Collar Resort Silk Shirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #FEF3C7;"></span>
+            <span class="color-text">Champagne</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Fluid Relaxed Vacation Draped Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Mulberry Silk Crepe</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-018.png" alt="Mandarin Collar Washed Linen Shirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-018</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-018</span>
+          <h4 class="item-name" title="Mandarin Collar Washed Linen Shirt">Mandarin Collar Washed Linen Shirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Breezy Comfort Straight Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Pure Normandy Washed Linen</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-019.png" alt="French-Cuff Pleated Tuxedo Shirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-019</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-019</span>
+          <h4 class="item-name" title="French-Cuff Pleated Tuxedo Shirt">French-Cuff Pleated Tuxedo Shirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sharp Formal Tailored Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Egyptian Giza 120s Twill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-020.png" alt="Dual-Pocket Utility Safari Overshirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-020</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-020</span>
+          <h4 class="item-name" title="Dual-Pocket Utility Safari Overshirt">Dual-Pocket Utility Safari Overshirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #A8A29E;"></span>
+            <span class="color-text">Khaki</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Structured Overshirt</p>
+            <p class="fab-text"><strong>Cloth:</strong> Heavy Cotton Cavalry Twill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-021.png" alt="Fine-Wale Corduroy Casual Shirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-021</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-021</span>
+          <h4 class="item-name" title="Fine-Wale Corduroy Casual Shirt">Fine-Wale Corduroy Casual Shirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #EA580C;"></span>
+            <span class="color-text">Rust</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Classic Casual Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> 21-Wale Fine Baby Corduroy</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-022.png" alt="Western Indigo Denim Pearl-Snap" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-022</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-022</span>
+          <h4 class="item-name" title="Western Indigo Denim Pearl-Snap">Western Indigo Denim Pearl-Snap</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #1E40AF;"></span>
+            <span class="color-text">Indigo</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Fitted Slim Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Japanese Selvedge Chambray</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-023.png" alt="Bengal Stripe Banker Spread Shirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-023</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-023</span>
+          <h4 class="item-name" title="Bengal Stripe Banker Spread Shirt">Bengal Stripe Banker Spread Shirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #60A5FA;"></span>
+            <span class="color-text">Sky Blue</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Trim Modern Dress Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> 2-Ply Poplin 100s Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-024.png" alt="Kimono Collar Wrap Overshirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-024</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-024</span>
+          <h4 class="item-name" title="Kimono Collar Wrap Overshirt">Kimono Collar Wrap Overshirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Noragi Cross-Over Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Sashiko Stitched Heavy Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-025.png" alt="Textured Seersucker Summer Camp Shirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-025</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-025</span>
+          <h4 class="item-name" title="Textured Seersucker Summer Camp Shirt">Textured Seersucker Summer Camp Shirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #84CC16;"></span>
+            <span class="color-text">Sage</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Airy Boxy Summer Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Puckered Pure Cotton Seersucker</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-026.png" alt="Oversized Poplin Studio Shirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-026</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-026</span>
+          <h4 class="item-name" title="Oversized Poplin Studio Shirt">Oversized Poplin Studio Shirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Dramatic Dropped-Shoulder Oversized</p>
+            <p class="fab-text"><strong>Cloth:</strong> Crisp Paper-Touch Poplin</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-027.png" alt="Asymmetric Hidden-Placket Dress Shirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-027</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-027</span>
+          <h4 class="item-name" title="Asymmetric Hidden-Placket Dress Shirt">Asymmetric Hidden-Placket Dress Shirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sleek Sartorial Slim</p>
+            <p class="fab-text"><strong>Cloth:</strong> Lustrous Cotton Sateen</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-028.png" alt="Heavy Brushed Flannel Overshirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-028</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-028</span>
+          <h4 class="item-name" title="Heavy Brushed Flannel Overshirt">Heavy Brushed Flannel Overshirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #881337;"></span>
+            <span class="color-text">Burgundy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Boxy Heavyweight Layering Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Double-Brushed Scottish Flannel</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-029.png" alt="Embroidered Pure Linen Kurta" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-029</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-029</span>
+          <h4 class="item-name" title="Embroidered Pure Linen Kurta">Embroidered Pure Linen Kurta</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #F5F5F4;"></span>
+            <span class="color-text">Ecru</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Longline Side-Vent Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Hand-Spun Khadi Linen</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-030.png" alt="Cuban Collar Floral Batik Shirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-030</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-030</span>
+          <h4 class="item-name" title="Cuban Collar Floral Batik Shirt">Cuban Collar Floral Batik Shirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Vacation Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Rayon Viscose Voile</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/olive_polo_shirt.jpg" alt="Waffle-Knit Structured Polo" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">top-031</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-031</span>
+          <h4 class="item-name" title="Waffle-Knit Structured Polo">Waffle-Knit Structured Polo</h4>
+          <div class="item-meta">
+            <span class="subcat">Polo</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Form-Fitting Polo</p>
+            <p class="fab-text"><strong>Cloth:</strong> Organic Waffle Weave Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-032.png" alt="Open-Weave Crochet Retro Polo" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-032</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-032</span>
+          <h4 class="item-name" title="Open-Weave Crochet Retro Polo">Open-Weave Crochet Retro Polo</h4>
+          <div class="item-meta">
+            <span class="subcat">Polo</span> &bull; 
+            <span class="color-dot" style="background-color: #FEF3C7;"></span>
+            <span class="color-text">Champagne</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 1970s Riviera Relaxed Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Cotton Ribbon Open Knit</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/grey_cashmere_sweater.jpg" alt="Pure Cashmere Heather Crewneck" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">top-033</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-033</span>
+          <h4 class="item-name" title="Pure Cashmere Heather Crewneck">Pure Cashmere Heather Crewneck</h4>
+          <div class="item-meta">
+            <span class="subcat">Sweater</span> &bull; 
+            <span class="color-dot" style="background-color: #9CA3AF;"></span>
+            <span class="color-text">Heather Grey</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Classic Sartorial Knit Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Grade-A Mongolian Cashmere (2-Ply)</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-034.png" alt="Fisherman Cable-Knit Wool Jumper" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-034</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-034</span>
+          <h4 class="item-name" title="Fisherman Cable-Knit Wool Jumper">Fisherman Cable-Knit Wool Jumper</h4>
+          <div class="item-meta">
+            <span class="subcat">Sweater</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Heavy Chunky Traditional Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Oiled Aran Wool</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-035.png" alt="Fine Merino Ribbed Turtleneck" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-035</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-035</span>
+          <h4 class="item-name" title="Fine Merino Ribbed Turtleneck">Fine Merino Ribbed Turtleneck</h4>
+          <div class="item-meta">
+            <span class="subcat">Sweater</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sleek Sartorial Second-Skin Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Extra-Fine 19.5 Micron Merino</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-036.png" alt="Chunky Ribbed Shawl-Collar Cardigan" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-036</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-036</span>
+          <h4 class="item-name" title="Chunky Ribbed Shawl-Collar Cardigan">Chunky Ribbed Shawl-Collar Cardigan</h4>
+          <div class="item-meta">
+            <span class="subcat">Cardigan</span> &bull; 
+            <span class="color-dot" style="background-color: #D97706;"></span>
+            <span class="color-text">Camel</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Robe-Like Knit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Lambswool & Alpaca Blend</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-037.png" alt="Brushed Mohair Gradient Jumper" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-037</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-037</span>
+          <h4 class="item-name" title="Brushed Mohair Gradient Jumper">Brushed Mohair Gradient Jumper</h4>
+          <div class="item-meta">
+            <span class="subcat">Sweater</span> &bull; 
+            <span class="color-dot" style="background-color: #0F766E;"></span>
+            <span class="color-text">Teal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Fluffy Slouchy Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Kid Mohair & Silk Blend</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-038.png" alt="Seed-Stitch Cotton V-Neck Sweater" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-038</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-038</span>
+          <h4 class="item-name" title="Seed-Stitch Cotton V-Neck Sweater">Seed-Stitch Cotton V-Neck Sweater</h4>
+          <div class="item-meta">
+            <span class="subcat">Sweater</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Tailored V-Neck</p>
+            <p class="fab-text"><strong>Cloth:</strong> Long-Staple Pima Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-039.png" alt="Zip-Neck Driving Merino Pullover" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-039</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-039</span>
+          <h4 class="item-name" title="Zip-Neck Driving Merino Pullover">Zip-Neck Driving Merino Pullover</h4>
+          <div class="item-meta">
+            <span class="subcat">Sweater</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sporting Tailored Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Worsted Merino Wool</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-040.png" alt="Milano-Stitch Knitted Overshirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-040</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-040</span>
+          <h4 class="item-name" title="Milano-Stitch Knitted Overshirt">Milano-Stitch Knitted Overshirt</h4>
+          <div class="item-meta">
+            <span class="subcat">Sweater</span> &bull; 
+            <span class="color-dot" style="background-color: #D6D3D1;"></span>
+            <span class="color-text">Beige</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Structured Cardigan-Jacket</p>
+            <p class="fab-text"><strong>Cloth:</strong> Dense Milano Rib Double Knit</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-041.png" alt="Silk-Cotton Knit T-Shirt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-041</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-041</span>
+          <h4 class="item-name" title="Silk-Cotton Knit T-Shirt">Silk-Cotton Knit T-Shirt</h4>
+          <div class="item-meta">
+            <span class="subcat">T-shirt</span> &bull; 
+            <span class="color-dot" style="background-color: #4C0519;"></span>
+            <span class="color-text">Bordeaux</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Fine Gauge Sartorial Tee</p>
+            <p class="fab-text"><strong>Cloth:</strong> 55% Silk, 45% Cotton Fine Knit</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-042.png" alt="Breton Knit Button-Shoulder Sailor Sweater" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-042</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-042</span>
+          <h4 class="item-name" title="Breton Knit Button-Shoulder Sailor Sweater">Breton Knit Button-Shoulder Sailor Sweater</h4>
+          <div class="item-meta">
+            <span class="subcat">Sweater</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Traditional Nautical Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Pure Virgin Wool</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-043.png" alt="Textured Ribbed Sleeveless Knit Vest" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-043</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-043</span>
+          <h4 class="item-name" title="Textured Ribbed Sleeveless Knit Vest">Textured Ribbed Sleeveless Knit Vest</h4>
+          <div class="item-meta">
+            <span class="subcat">Sweater</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Modern Layering Vest</p>
+            <p class="fab-text"><strong>Cloth:</strong> Organic Chunky Cotton Knit</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-044.png" alt="Alpaca Bouclé Crewneck Sweater" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-044</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-044</span>
+          <h4 class="item-name" title="Alpaca Bouclé Crewneck Sweater">Alpaca Bouclé Crewneck Sweater</h4>
+          <div class="item-meta">
+            <span class="subcat">Sweater</span> &bull; 
+            <span class="color-dot" style="background-color: #C2410C;"></span>
+            <span class="color-text">Clay</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Comfort Slouch Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Looped Bouclé Yarn</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-045.png" alt="Unstructured Italian Linen Blazer" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-045</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-045</span>
+          <h4 class="item-name" title="Unstructured Italian Linen Blazer">Unstructured Italian Linen Blazer</h4>
+          <div class="item-meta">
+            <span class="subcat">Blazer</span> &bull; 
+            <span class="color-dot" style="background-color: #78350F;"></span>
+            <span class="color-text">Brown</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Neapolitan Soft Shoulder Relaxed Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Pure Delavé Italian Linen</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-046.png" alt="Double-Breasted Wool Chalk-Stripe Blazer" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-046</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-046</span>
+          <h4 class="item-name" title="Double-Breasted Wool Chalk-Stripe Blazer">Double-Breasted Wool Chalk-Stripe Blazer</h4>
+          <div class="item-meta">
+            <span class="subcat">Blazer</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 6x2 Military Formal Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Super 130s Flannel Wool</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-047.png" alt="Collarless Modern Architecture Blazer" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-047</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-047</span>
+          <h4 class="item-name" title="Collarless Modern Architecture Blazer">Collarless Modern Architecture Blazer</h4>
+          <div class="item-meta">
+            <span class="subcat">Blazer</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Clean Monolithic Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> High-Twist Wool Crepe</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-048.png" alt="Heritage Houndstooth Tweed Jacket" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-048</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-048</span>
+          <h4 class="item-name" title="Heritage Houndstooth Tweed Jacket">Heritage Houndstooth Tweed Jacket</h4>
+          <div class="item-meta">
+            <span class="subcat">Blazer</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Traditional Country Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Scottish Harris Tweed</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-049.png" alt="Minimalist Matte Leather Bomber" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-049</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-049</span>
+          <h4 class="item-name" title="Minimalist Matte Leather Bomber">Minimalist Matte Leather Bomber</h4>
+          <div class="item-meta">
+            <span class="subcat">Jacket</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Clean Boxy MA-1 Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Supple Matte Lambskin Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-050.png" alt="Waterproof Technical Gore-Shell" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-050</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-050</span>
+          <h4 class="item-name" title="Waterproof Technical Gore-Shell">Waterproof Technical Gore-Shell</h4>
+          <div class="item-meta">
+            <span class="subcat">Jacket</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Ergonomic Alpine Articulated Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> 3-Layer Ripstop Waterproof Membrane</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-051.png" alt="Double-Breasted Cotton Gabardine Trench" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-051</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-051</span>
+          <h4 class="item-name" title="Double-Breasted Cotton Gabardine Trench">Double-Breasted Cotton Gabardine Trench</h4>
+          <div class="item-meta">
+            <span class="subcat">Jacket</span> &bull; 
+            <span class="color-dot" style="background-color: #D6D3D1;"></span>
+            <span class="color-text">Beige</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Regal Below-the-Knee Trench Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Storm Cotton Gabardine</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-052.png" alt="Quilted Diamond Liner Jacket" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-052</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-052</span>
+          <h4 class="item-name" title="Quilted Diamond Liner Jacket">Quilted Diamond Liner Jacket</h4>
+          <div class="item-meta">
+            <span class="subcat">Jacket</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Lightweight Collarless Mid-Layer</p>
+            <p class="fab-text"><strong>Cloth:</strong> Ripstop Nylon with Primaloft Fill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-053.png" alt="Raw Selvedge Denim Trucker Jacket" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-053</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-053</span>
+          <h4 class="item-name" title="Raw Selvedge Denim Trucker Jacket">Raw Selvedge Denim Trucker Jacket</h4>
+          <div class="item-meta">
+            <span class="subcat">Jacket</span> &bull; 
+            <span class="color-dot" style="background-color: #1E40AF;"></span>
+            <span class="color-text">Indigo</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Type III Modified Boxy Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> 14oz Japanese Selvedge Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-054.png" alt="Camel Hair Double-Breasted Overcoat" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-054</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-054</span>
+          <h4 class="item-name" title="Camel Hair Double-Breasted Overcoat">Camel Hair Double-Breasted Overcoat</h4>
+          <div class="item-meta">
+            <span class="subcat">Jacket</span> &bull; 
+            <span class="color-dot" style="background-color: #D97706;"></span>
+            <span class="color-text">Camel</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Full-Length Tailored Greatcoat</p>
+            <p class="fab-text"><strong>Cloth:</strong> 100% Pure Mongolian Camel Hair</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-055.png" alt="Waxed Cotton Field Parka" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-055</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-055</span>
+          <h4 class="item-name" title="Waxed Cotton Field Parka">Waxed Cotton Field Parka</h4>
+          <div class="item-meta">
+            <span class="subcat">Jacket</span> &bull; 
+            <span class="color-dot" style="background-color: #A8A29E;"></span>
+            <span class="color-text">Khaki</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Raglan Commuter Parka</p>
+            <p class="fab-text"><strong>Cloth:</strong> Weatherproof Waxed British Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/top-056.png" alt="Raw Silk Embroidered Nehru Jacket" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">top-056</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-TOP-056</span>
+          <h4 class="item-name" title="Raw Silk Embroidered Nehru Jacket">Raw Silk Embroidered Nehru Jacket</h4>
+          <div class="item-meta">
+            <span class="subcat">Jacket</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Standing Collar Waistcoat Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Pure Mulberry Raw Silk</p>
+          </div>
+        </div>
+      </div>
+    
+        </div>
+      </section>
+    
+      <section class="category-section">
+        <div class="section-header">
+          <h2 class="category-title">Bottom Collection</h2>
+          <span class="category-count">44 Distinct Garment Designs</span>
+        </div>
+        <div class="contact-grid">
+          
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/charcoal_trousers.jpg" alt="Double-Pleated Tailored Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">bot-001</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-001</span>
+          <h4 class="item-name" title="Double-Pleated Tailored Trousers">Double-Pleated Tailored Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> High-Rise Relaxed Taper with Deep Pleats</p>
+            <p class="fab-text"><strong>Cloth:</strong> Super 120s High-Twist Wool</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/beige_chinos.jpg" alt="Gurkha Waistband Tailored Chinos" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">bot-002</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-002</span>
+          <h4 class="item-name" title="Gurkha Waistband Tailored Chinos">Gurkha Waistband Tailored Chinos</h4>
+          <div class="item-meta">
+            <span class="subcat">Chinos</span> &bull; 
+            <span class="color-dot" style="background-color: #D6D3D1;"></span>
+            <span class="color-text">Beige</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Mid-Rise Classic Straight Taper</p>
+            <p class="fab-text"><strong>Cloth:</strong> High-Density Cotton Twill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-003.png" alt="Fluid Wide-Leg Linen Palazzo Pants" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-003</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-003</span>
+          <h4 class="item-name" title="Fluid Wide-Leg Linen Palazzo Pants">Fluid Wide-Leg Linen Palazzo Pants</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Dramatic Ultra Wide-Leg with Fluid Puddle</p>
+            <p class="fab-text"><strong>Cloth:</strong> Belgian Washed Linen</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-004.png" alt="Modular Technical Cargo Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-004</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-004</span>
+          <h4 class="item-name" title="Modular Technical Cargo Trousers">Modular Technical Cargo Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Cargo Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Ergonomic Articulated Knee Tapered</p>
+            <p class="fab-text"><strong>Cloth:</strong> DWR-Treated Cordura Stretch Ripstop</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-005.png" alt="Heavyweight Cropped Wool Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-005</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-005</span>
+          <h4 class="item-name" title="Heavyweight Cropped Wool Trousers">Heavyweight Cropped Wool Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Architectural Wide Cropped Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Melange Wool Twill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-006.png" alt="Drawstring Sartorial Jogger Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-006</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-006</span>
+          <h4 class="item-name" title="Drawstring Sartorial Jogger Trousers">Drawstring Sartorial Jogger Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Joggers</span> &bull; 
+            <span class="color-dot" style="background-color: #78350F;"></span>
+            <span class="color-text">Brown</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Hybrid Tailored Jogger Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Wool-Cashmere Stretch Flannel</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-007.png" alt="High-Waisted Hollywood Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-007</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-007</span>
+          <h4 class="item-name" title="High-Waisted Hollywood Trousers">High-Waisted Hollywood Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #D97706;"></span>
+            <span class="color-text">Camel</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 1940s Hollywood High Waist Straight</p>
+            <p class="fab-text"><strong>Cloth:</strong> Tropical Wool Gabardine</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-008.png" alt="Black Tie Satin-Stripe Dress Pants" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-008</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-008</span>
+          <h4 class="item-name" title="Black Tie Satin-Stripe Dress Pants">Black Tie Satin-Stripe Dress Pants</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Razor Sharp Formal Taper</p>
+            <p class="fab-text"><strong>Cloth:</strong> Barathea Wool & Silk Satin</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-009.png" alt="Heavy Cotton Drill Painter Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-009</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-009</span>
+          <h4 class="item-name" title="Heavy Cotton Drill Painter Trousers">Heavy Cotton Drill Painter Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #F5F5F4;"></span>
+            <span class="color-text">Ecru</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Straight Workwear Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> 12oz Unbleached Cotton Drill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-010.png" alt="Sailor Flap-Front Drop-Seat Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-010</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-010</span>
+          <h4 class="item-name" title="Sailor Flap-Front Drop-Seat Trousers">Sailor Flap-Front Drop-Seat Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Traditional Naval Wide Leg</p>
+            <p class="fab-text"><strong>Cloth:</strong> Heavy Navy Melton Wool</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-011.png" alt="Pleated Peg-Leg Tapered Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-011</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-011</span>
+          <h4 class="item-name" title="Pleated Peg-Leg Tapered Trousers">Pleated Peg-Leg Tapered Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #9CA3AF;"></span>
+            <span class="color-text">Heather Grey</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Voluminous Hip Peg-Leg Taper</p>
+            <p class="fab-text"><strong>Cloth:</strong> Worsted Wool Crepe</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-012.png" alt="Silk-Linen Blend Tropical Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-012</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-012</span>
+          <h4 class="item-name" title="Silk-Linen Blend Tropical Trousers">Silk-Linen Blend Tropical Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #FEF3C7;"></span>
+            <span class="color-text">Champagne</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Vacation Fluid Leg</p>
+            <p class="fab-text"><strong>Cloth:</strong> Silk-Linen Herringbone</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-013.png" alt="Refined Stretch Commuter Chinos" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-013</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-013</span>
+          <h4 class="item-name" title="Refined Stretch Commuter Chinos">Refined Stretch Commuter Chinos</h4>
+          <div class="item-meta">
+            <span class="subcat">Chinos</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Clean Ergonomic Slim Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Technical Stretch Twill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-014.png" alt="Wide-Rib Corduroy Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-014</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-014</span>
+          <h4 class="item-name" title="Wide-Rib Corduroy Trousers">Wide-Rib Corduroy Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #EA580C;"></span>
+            <span class="color-text">Rust</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Substantial Wide Straight Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> 8-Wale Chunky Corduroy</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-015.png" alt="Silk Churidar Ethnic Pyjama" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-015</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-015</span>
+          <h4 class="item-name" title="Silk Churidar Ethnic Pyjama">Silk Churidar Ethnic Pyjama</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Ruched Traditional Taper</p>
+            <p class="fab-text"><strong>Cloth:</strong> Pure Mulberry Dupion Silk</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-016.png" alt="Side-Snap Track Pants" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-016</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-016</span>
+          <h4 class="item-name" title="Side-Snap Track Pants">Side-Snap Track Pants</h4>
+          <div class="item-meta">
+            <span class="subcat">Joggers</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Straight Relaxed Sport Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Double-Piqué Tricot Knit</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-017.png" alt="Tailored Poplin Pyjama Pant" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-017</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-017</span>
+          <h4 class="item-name" title="Tailored Poplin Pyjama Pant">Tailored Poplin Pyjama Pant</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #60A5FA;"></span>
+            <span class="color-text">Sky Blue</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Fluid Lounging Straight</p>
+            <p class="fab-text"><strong>Cloth:</strong> Fine Egyptian Poplin</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-018.png" alt="Grecian Pleated Linen Wrap Pant" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-018</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-018</span>
+          <h4 class="item-name" title="Grecian Pleated Linen Wrap Pant">Grecian Pleated Linen Wrap Pant</h4>
+          <div class="item-meta">
+            <span class="subcat">Trousers</span> &bull; 
+            <span class="color-dot" style="background-color: #6B7280;"></span>
+            <span class="color-text">Sand</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Asymmetric Crossover Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Heavy Washed Linen</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-019.png" alt="Raw Selvedge Straight-Leg Jeans" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-019</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-019</span>
+          <h4 class="item-name" title="Raw Selvedge Straight-Leg Jeans">Raw Selvedge Straight-Leg Jeans</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #1E40AF;"></span>
+            <span class="color-text">Indigo</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Classic 1950s Straight Leg</p>
+            <p class="fab-text"><strong>Cloth:</strong> 14.5oz Okayama Selvedge Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-020.png" alt="Carpenter Workwear Painter Jeans" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-020</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-020</span>
+          <h4 class="item-name" title="Carpenter Workwear Painter Jeans">Carpenter Workwear Painter Jeans</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #F5F5F4;"></span>
+            <span class="color-text">Ecru</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Wide Workwear Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> 13oz Washed Cotton Bull Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-021.png" alt="Washed Vintage Bleach Loose Jeans" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-021</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-021</span>
+          <h4 class="item-name" title="Washed Vintage Bleach Loose Jeans">Washed Vintage Bleach Loose Jeans</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #60A5FA;"></span>
+            <span class="color-text">Sky Blue</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 90s Relaxed Slouchy Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> 12oz Enzyme-Washed Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-022.png" alt="Jet Black Selvedge Slim-Straight Jeans" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-022</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-022</span>
+          <h4 class="item-name" title="Jet Black Selvedge Slim-Straight Jeans">Jet Black Selvedge Slim-Straight Jeans</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sleek Rocker Straight</p>
+            <p class="fab-text"><strong>Cloth:</strong> 13.5oz Stay-Black Sulphur Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-023.png" alt="Flare Bootcut 1970s Jeans" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-023</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-023</span>
+          <h4 class="item-name" title="Flare Bootcut 1970s Jeans">Flare Bootcut 1970s Jeans</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #1E40AF;"></span>
+            <span class="color-text">Indigo</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Tailored Knee with Subtle Bell Flare</p>
+            <p class="fab-text"><strong>Cloth:</strong> 12.5oz Ring-Spun Stretch Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-024.png" alt="Trouser-Cut Indigo Denim Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-024</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-024</span>
+          <h4 class="item-name" title="Trouser-Cut Indigo Denim Trousers">Trouser-Cut Indigo Denim Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Tailored Trouser Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> 11oz Sateen Weave Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-025.png" alt="Boro Sashiko Repaired Denim" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-025</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-025</span>
+          <h4 class="item-name" title="Boro Sashiko Repaired Denim">Boro Sashiko Repaired Denim</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #1E40AF;"></span>
+            <span class="color-text">Indigo</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Artisanal Relaxed Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Vintage Salvaged Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-026.png" alt="Wide-Leg Skate Denim Trousers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-026</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-026</span>
+          <h4 class="item-name" title="Wide-Leg Skate Denim Trousers">Wide-Leg Skate Denim Trousers</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Ultra-Wide Baggy Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> 13oz Stonewashed Heavy Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-027.png" alt="Contrast-Stitch Western Jeans" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-027</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-027</span>
+          <h4 class="item-name" title="Contrast-Stitch Western Jeans">Contrast-Stitch Western Jeans</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #1E40AF;"></span>
+            <span class="color-text">Indigo</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Straight Cowboy Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Heavyweight Broken Twill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-028.png" alt="Ecru Denim Chino Hybrid" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-028</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-028</span>
+          <h4 class="item-name" title="Ecru Denim Chino Hybrid">Ecru Denim Chino Hybrid</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #D6D3D1;"></span>
+            <span class="color-text">Beige</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Clean Tapered Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Natural Unbleached Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-029.png" alt="Indigo Selvedge Dungaree Overalls" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-029</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-029</span>
+          <h4 class="item-name" title="Indigo Selvedge Dungaree Overalls">Indigo Selvedge Dungaree Overalls</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #1E40AF;"></span>
+            <span class="color-text">Indigo</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Classic Heritage Bib Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> 12oz Left-Hand Twill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-030.png" alt="Split-Hem Tailored Black Jeans" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-030</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-030</span>
+          <h4 class="item-name" title="Split-Hem Tailored Black Jeans">Split-Hem Tailored Black Jeans</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Slim with Ankle Slit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Overdyed Black Bull Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-031.png" alt="Vintage Acid Washed Loose Jeans" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-031</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-031</span>
+          <h4 class="item-name" title="Vintage Acid Washed Loose Jeans">Vintage Acid Washed Loose Jeans</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #9CA3AF;"></span>
+            <span class="color-text">Heather Grey</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Slouchy Loose Cut</p>
+            <p class="fab-text"><strong>Cloth:</strong> Marble Washed Heavy Denim</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-032.png" alt="Raw Black Cuffed Rigid Denim" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-032</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-032</span>
+          <h4 class="item-name" title="Raw Black Cuffed Rigid Denim">Raw Black Cuffed Rigid Denim</h4>
+          <div class="item-meta">
+            <span class="subcat">Jeans</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Stiff Architectural Straight</p>
+            <p class="fab-text"><strong>Cloth:</strong> 15oz Heavy Black Selvedge</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-033.png" alt="Tailored Linen Bermuda Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-033</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-033</span>
+          <h4 class="item-name" title="Tailored Linen Bermuda Shorts">Tailored Linen Bermuda Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #D6D3D1;"></span>
+            <span class="color-text">Beige</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Smart Tailored Cut (Above Knee)</p>
+            <p class="fab-text"><strong>Cloth:</strong> Pure Italian Washed Linen</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-034.png" alt="Fast-Drying Nylon Trail Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-034</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-034</span>
+          <h4 class="item-name" title="Fast-Drying Nylon Trail Shorts">Fast-Drying Nylon Trail Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 6" Inseam Active Athletic Fit</p>
+            <p class="fab-text"><strong>Cloth:</strong> Supplex Taslan Nylon</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-035.png" alt="Double-Pleated Chino Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-035</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-035</span>
+          <h4 class="item-name" title="Double-Pleated Chino Shorts">Double-Pleated Chino Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Wide-Leg Tailored Short</p>
+            <p class="fab-text"><strong>Cloth:</strong> High-Density Cotton Twill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-036.png" alt="Raw-Hem French Terry Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-036</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-036</span>
+          <h4 class="item-name" title="Raw-Hem French Terry Shorts">Raw-Hem French Terry Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #9CA3AF;"></span>
+            <span class="color-text">Heather Grey</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Relaxed Lounging Short</p>
+            <p class="fab-text"><strong>Cloth:</strong> Heavyweight Loopback Terry</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-037.png" alt="Ripstop Multi-Pocket Cargo Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-037</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-037</span>
+          <h4 class="item-name" title="Ripstop Multi-Pocket Cargo Shorts">Ripstop Multi-Pocket Cargo Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #A8A29E;"></span>
+            <span class="color-text">Khaki</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Utilitarian Cargo Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Mil-Spec Cotton Ripstop</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-038.png" alt="Gurkha Double-Buckle Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-038</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-038</span>
+          <h4 class="item-name" title="Gurkha Double-Buckle Shorts">Gurkha Double-Buckle Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> High-Rise Gurkha Short</p>
+            <p class="fab-text"><strong>Cloth:</strong> Irish Cotton Drill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-039.png" alt="Cotton Seersucker Resort Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-039</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-039</span>
+          <h4 class="item-name" title="Cotton Seersucker Resort Shorts">Cotton Seersucker Resort Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #60A5FA;"></span>
+            <span class="color-text">Sky Blue</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Airy Vacation Short</p>
+            <p class="fab-text"><strong>Cloth:</strong> Puckered Seersucker Cotton</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-040.png" alt="Tailored Swim Trunks with Coin Pocket" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-040</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-040</span>
+          <h4 class="item-name" title="Tailored Swim Trunks with Coin Pocket">Tailored Swim Trunks with Coin Pocket</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #4C0519;"></span>
+            <span class="color-text">Bordeaux</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Tailored Swim Short</p>
+            <p class="fab-text"><strong>Cloth:</strong> Quick-Dry Peached Polyamide</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-041.png" alt="Linen Drawstring Lounge Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-041</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-041</span>
+          <h4 class="item-name" title="Linen Drawstring Lounge Shorts">Linen Drawstring Lounge Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #C2410C;"></span>
+            <span class="color-text">Clay</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Slouchy Beachfront Short</p>
+            <p class="fab-text"><strong>Cloth:</strong> Slubbed Heavyweight Linen</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-042.png" alt="Retro 1970s Dolphin Running Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-042</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-042</span>
+          <h4 class="item-name" title="Retro 1970s Dolphin Running Shorts">Retro 1970s Dolphin Running Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Curved Contrast Hem Athletic</p>
+            <p class="fab-text"><strong>Cloth:</strong> Shiny Nylon Tricot</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-043.png" alt="Heavyweight Mesh Basketball Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-043</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-043</span>
+          <h4 class="item-name" title="Heavyweight Mesh Basketball Shorts">Heavyweight Mesh Basketball Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Long Baggy Court Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Double-Layer Polyester Mesh</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/bot-044.png" alt="Raw Edge Denim Cut-Off Shorts" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">bot-044</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-BOT-044</span>
+          <h4 class="item-name" title="Raw Edge Denim Cut-Off Shorts">Raw Edge Denim Cut-Off Shorts</h4>
+          <div class="item-meta">
+            <span class="subcat">Shorts</span> &bull; 
+            <span class="color-dot" style="background-color: #1E40AF;"></span>
+            <span class="color-text">Indigo</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Distressed Vintage Short</p>
+            <p class="fab-text"><strong>Cloth:</strong> 13oz Bleached Denim</p>
+          </div>
+        </div>
+      </div>
+    
+        </div>
+      </section>
+    
+      <section class="category-section">
+        <div class="section-header">
+          <h2 class="category-title">Shoes Collection</h2>
+          <span class="category-count">32 Distinct Garment Designs</span>
+        </div>
+        <div class="contact-grid">
+          
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/white_sneakers.jpg" alt="Minimalist Clean Calfskin Sneaker" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">sho-001</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-001</span>
+          <h4 class="item-name" title="Minimalist Clean Calfskin Sneaker">Minimalist Clean Calfskin Sneaker</h4>
+          <div class="item-meta">
+            <span class="subcat">Sneakers</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Low-Top Minimalist Cupsole</p>
+            <p class="fab-text"><strong>Cloth:</strong> Italian Full-Grain Nappa</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-002.png" alt="Retro Gum-Sole Suede Runner" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-002</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-002</span>
+          <h4 class="item-name" title="Retro Gum-Sole Suede Runner">Retro Gum-Sole Suede Runner</h4>
+          <div class="item-meta">
+            <span class="subcat">Sneakers</span> &bull; 
+            <span class="color-dot" style="background-color: #9CA3AF;"></span>
+            <span class="color-text">Heather Grey</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 1970s Low-Profile Trainer</p>
+            <p class="fab-text"><strong>Cloth:</strong> Suede & Breathable Mesh</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-003.png" alt="High-Top Canvas Basketball Sneaker" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-003</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-003</span>
+          <h4 class="item-name" title="High-Top Canvas Basketball Sneaker">High-Top Canvas Basketball Sneaker</h4>
+          <div class="item-meta">
+            <span class="subcat">Sneakers</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Vintage Ankle-High Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> 14oz Heavy Duck Canvas</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-004.png" alt="Chunky Vibram-Sole Trail Runner" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-004</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-004</span>
+          <h4 class="item-name" title="Chunky Vibram-Sole Trail Runner">Chunky Vibram-Sole Trail Runner</h4>
+          <div class="item-meta">
+            <span class="subcat">Sneakers</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Heavy Rugged Technical Sneaker</p>
+            <p class="fab-text"><strong>Cloth:</strong> Cordura Mesh & Rubberized TPU</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-005.png" alt="Slip-On Canvas Deck Shoes" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-005</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-005</span>
+          <h4 class="item-name" title="Slip-On Canvas Deck Shoes">Slip-On Canvas Deck Shoes</h4>
+          <div class="item-meta">
+            <span class="subcat">Sneakers</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Low Slip-On Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Washed Twill Canvas</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-006.png" alt="Vintage Leather Tennis Court Shoe" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-006</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-006</span>
+          <h4 class="item-name" title="Vintage Leather Tennis Court Shoe">Vintage Leather Tennis Court Shoe</h4>
+          <div class="item-meta">
+            <span class="subcat">Sneakers</span> &bull; 
+            <span class="color-dot" style="background-color: #F5F5F4;"></span>
+            <span class="color-text">Ecru</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Low-Profile Retro Court</p>
+            <p class="fab-text"><strong>Cloth:</strong> Perforated Calf Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-007.png" alt="Seamless Knit Sock Runner" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-007</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-007</span>
+          <h4 class="item-name" title="Seamless Knit Sock Runner">Seamless Knit Sock Runner</h4>
+          <div class="item-meta">
+            <span class="subcat">Sneakers</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Futuristic Slip-On Sock</p>
+            <p class="fab-text"><strong>Cloth:</strong> Engineered Stretch Knit</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-008.png" alt="Monochromatic Triple Black Sneaker" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-008</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-008</span>
+          <h4 class="item-name" title="Monochromatic Triple Black Sneaker">Monochromatic Triple Black Sneaker</h4>
+          <div class="item-meta">
+            <span class="subcat">Sneakers</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sleek Stealth Low-Top</p>
+            <p class="fab-text"><strong>Cloth:</strong> Matte Leather & Ballistic Nylon</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/brown_loafers.jpg" alt="Hand-Stitched Penny Loafers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">sho-009</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-009</span>
+          <h4 class="item-name" title="Hand-Stitched Penny Loafers">Hand-Stitched Penny Loafers</h4>
+          <div class="item-meta">
+            <span class="subcat">Loafers</span> &bull; 
+            <span class="color-dot" style="background-color: #78350F;"></span>
+            <span class="color-text">Brown</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sleek Almond Toe Slip-On</p>
+            <p class="fab-text"><strong>Cloth:</strong> Burnished French Box Calf</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-010.png" alt="Belgian Slipper with Braided Tassel" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-010</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-010</span>
+          <h4 class="item-name" title="Belgian Slipper with Braided Tassel">Belgian Slipper with Braided Tassel</h4>
+          <div class="item-meta">
+            <span class="subcat">Loafers</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Low-Cut Continental Slipper</p>
+            <p class="fab-text"><strong>Cloth:</strong> Plush Cashmere Suede</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-011.png" alt="Chunky Commando-Sole Penny Loafers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-011</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-011</span>
+          <h4 class="item-name" title="Chunky Commando-Sole Penny Loafers">Chunky Commando-Sole Penny Loafers</h4>
+          <div class="item-meta">
+            <span class="subcat">Loafers</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Substantial Lugged Loafer</p>
+            <p class="fab-text"><strong>Cloth:</strong> High-Shine Polished Cobbler Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-012.png" alt="Suede Horsebit Driving Moccasins" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-012</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-012</span>
+          <h4 class="item-name" title="Suede Horsebit Driving Moccasins">Suede Horsebit Driving Moccasins</h4>
+          <div class="item-meta">
+            <span class="subcat">Loafers</span> &bull; 
+            <span class="color-dot" style="background-color: #D97706;"></span>
+            <span class="color-text">Camel</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Flexible Tubular Moccasin</p>
+            <p class="fab-text"><strong>Cloth:</strong> Velvety Italian Suede</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-013.png" alt="Hand-Woven Leather Espadrilles" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-013</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-013</span>
+          <h4 class="item-name" title="Hand-Woven Leather Espadrilles">Hand-Woven Leather Espadrilles</h4>
+          <div class="item-meta">
+            <span class="subcat">Loafers</span> &bull; 
+            <span class="color-dot" style="background-color: #D6D3D1;"></span>
+            <span class="color-text">Beige</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Spanish Rope-Sole Espadrille</p>
+            <p class="fab-text"><strong>Cloth:</strong> Vegetable-Tanned Woven Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-014.png" alt="Kiltie Fringe Monk-Strap Loafers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-014</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-014</span>
+          <h4 class="item-name" title="Kiltie Fringe Monk-Strap Loafers">Kiltie Fringe Monk-Strap Loafers</h4>
+          <div class="item-meta">
+            <span class="subcat">Loafers</span> &bull; 
+            <span class="color-dot" style="background-color: #881337;"></span>
+            <span class="color-text">Burgundy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Brogued Fringe Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Glazed Cordovan Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-015.png" alt="Silk Velvet Smoking Slippers" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-015</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-015</span>
+          <h4 class="item-name" title="Silk Velvet Smoking Slippers">Silk Velvet Smoking Slippers</h4>
+          <div class="item-meta">
+            <span class="subcat">Loafers</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Elegant Formal Opera Slipper</p>
+            <p class="fab-text"><strong>Cloth:</strong> Pure Silk Velvet & Quilted Satin</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-016.png" alt="Venetian Minimalist Leather Slipper" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-016</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-016</span>
+          <h4 class="item-name" title="Venetian Minimalist Leather Slipper">Venetian Minimalist Leather Slipper</h4>
+          <div class="item-meta">
+            <span class="subcat">Loafers</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Seamless Clean Slip-On</p>
+            <p class="fab-text"><strong>Cloth:</strong> Supple Nappa Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-017.png" alt="Vibram Commando Chelsea Boots" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-017</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-017</span>
+          <h4 class="item-name" title="Vibram Commando Chelsea Boots">Vibram Commando Chelsea Boots</h4>
+          <div class="item-meta">
+            <span class="subcat">Boots</span> &bull; 
+            <span class="color-dot" style="background-color: #78350F;"></span>
+            <span class="color-text">Brown</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Structured Ankle Chelsea</p>
+            <p class="fab-text"><strong>Cloth:</strong> Waxed Roughout Suede</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-018.png" alt="Goodyear-Welted Suede Chukka Boots" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-018</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-018</span>
+          <h4 class="item-name" title="Goodyear-Welted Suede Chukka Boots">Goodyear-Welted Suede Chukka Boots</h4>
+          <div class="item-meta">
+            <span class="subcat">Boots</span> &bull; 
+            <span class="color-dot" style="background-color: #D97706;"></span>
+            <span class="color-text">Camel</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 2-Eyelet Desert Chukka</p>
+            <p class="fab-text"><strong>Cloth:</strong> Snuff Suede Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-019.png" alt="Combat Tactical Lug-Sole Boots" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-019</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-019</span>
+          <h4 class="item-name" title="Combat Tactical Lug-Sole Boots">Combat Tactical Lug-Sole Boots</h4>
+          <div class="item-meta">
+            <span class="subcat">Boots</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 8-Eyelet High-Top Combat Boot</p>
+            <p class="fab-text"><strong>Cloth:</strong> Full-Grain Military Cowhide</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-020.png" alt="Side-Zip Cuban Heel Leather Boots" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-020</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-020</span>
+          <h4 class="item-name" title="Side-Zip Cuban Heel Leather Boots">Side-Zip Cuban Heel Leather Boots</h4>
+          <div class="item-meta">
+            <span class="subcat">Boots</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sleek Pointed Toe with 40mm Cuban Heel</p>
+            <p class="fab-text"><strong>Cloth:</strong> Polished Aniline Calfskin</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-021.png" alt="Weatherproof Rubber Duck Boots" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-021</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-021</span>
+          <h4 class="item-name" title="Weatherproof Rubber Duck Boots">Weatherproof Rubber Duck Boots</h4>
+          <div class="item-meta">
+            <span class="subcat">Boots</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Waterproof Wet-Weather Boot</p>
+            <p class="fab-text"><strong>Cloth:</strong> Vulcanized Rubber & Waxed Canvas</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-022.png" alt="Moc-Toe Heavy Leather Work Boot" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-022</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-022</span>
+          <h4 class="item-name" title="Moc-Toe Heavy Leather Work Boot">Moc-Toe Heavy Leather Work Boot</h4>
+          <div class="item-meta">
+            <span class="subcat">Boots</span> &bull; 
+            <span class="color-dot" style="background-color: #EA580C;"></span>
+            <span class="color-text">Rust</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 6-Inch U-Tip Work Boot</p>
+            <p class="fab-text"><strong>Cloth:</strong> Oil-Tanned Red Cedar Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-023.png" alt="Cap-Toe Oxford Formal Shoes" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-023</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-023</span>
+          <h4 class="item-name" title="Cap-Toe Oxford Formal Shoes">Cap-Toe Oxford Formal Shoes</h4>
+          <div class="item-meta">
+            <span class="subcat">Formal Shoes</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Closed Lacing Balmoral Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> High-Shine Aniline Calfskin</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-024.png" alt="Norwegian Split-Toe Derby Shoes" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-024</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-024</span>
+          <h4 class="item-name" title="Norwegian Split-Toe Derby Shoes">Norwegian Split-Toe Derby Shoes</h4>
+          <div class="item-meta">
+            <span class="subcat">Formal Shoes</span> &bull; 
+            <span class="color-dot" style="background-color: #881337;"></span>
+            <span class="color-text">Burgundy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Substantial Split-Apron Derby</p>
+            <p class="fab-text"><strong>Cloth:</strong> Pebble-Grain Bullhide</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-025.png" alt="Double Monk-Strap Dress Shoes" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-025</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-025</span>
+          <h4 class="item-name" title="Double Monk-Strap Dress Shoes">Double Monk-Strap Dress Shoes</h4>
+          <div class="item-meta">
+            <span class="subcat">Formal Shoes</span> &bull; 
+            <span class="color-dot" style="background-color: #78350F;"></span>
+            <span class="color-text">Brown</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sleek Buckled Dress Shoe</p>
+            <p class="fab-text"><strong>Cloth:</strong> Burnished Museum Calf</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-026.png" alt="Longwing Brogue English Derbies" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-026</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-026</span>
+          <h4 class="item-name" title="Longwing Brogue English Derbies">Longwing Brogue English Derbies</h4>
+          <div class="item-meta">
+            <span class="subcat">Formal Shoes</span> &bull; 
+            <span class="color-dot" style="background-color: #D97706;"></span>
+            <span class="color-text">Camel</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Gunboat Longwing Brogue</p>
+            <p class="fab-text"><strong>Cloth:</strong> Scotch Grain Heavy Calf</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-027.png" alt="Wholecut Single-Piece Oxford" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-027</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-027</span>
+          <h4 class="item-name" title="Wholecut Single-Piece Oxford">Wholecut Single-Piece Oxford</h4>
+          <div class="item-meta">
+            <span class="subcat">Formal Shoes</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Seamless Wholecut Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Flawless Single Hide Calfskin</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-028.png" alt="Patent Leather Evening Pump" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-028</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-028</span>
+          <h4 class="item-name" title="Patent Leather Evening Pump">Patent Leather Evening Pump</h4>
+          <div class="item-meta">
+            <span class="subcat">Formal Shoes</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Black Tie Opera Court Shoe</p>
+            <p class="fab-text"><strong>Cloth:</strong> Mirror Gloss Patent Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-029.png" alt="Woven Leather Fisherman Sandals" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-029</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-029</span>
+          <h4 class="item-name" title="Woven Leather Fisherman Sandals">Woven Leather Fisherman Sandals</h4>
+          <div class="item-meta">
+            <span class="subcat">Sandals</span> &bull; 
+            <span class="color-dot" style="background-color: #78350F;"></span>
+            <span class="color-text">Brown</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Enclosed Cage Toe Gladiator</p>
+            <p class="fab-text"><strong>Cloth:</strong> Vegetable-Tanned Full Grain Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-030.png" alt="Double-Strap Molded Cork Slides" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-030</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-030</span>
+          <h4 class="item-name" title="Double-Strap Molded Cork Slides">Double-Strap Molded Cork Slides</h4>
+          <div class="item-meta">
+            <span class="subcat">Sandals</span> &bull; 
+            <span class="color-dot" style="background-color: #D6D3D1;"></span>
+            <span class="color-text">Beige</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Anatomical Footbed Slide</p>
+            <p class="fab-text"><strong>Cloth:</strong> Oiled Nubuck Leather & Cork</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-031.png" alt="Handcrafted Zari Embroidered Juttis" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-031</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-031</span>
+          <h4 class="item-name" title="Handcrafted Zari Embroidered Juttis">Handcrafted Zari Embroidered Juttis</h4>
+          <div class="item-meta">
+            <span class="subcat">Traditional Footwear</span> &bull; 
+            <span class="color-dot" style="background-color: #FEF3C7;"></span>
+            <span class="color-text">Champagne</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Pointed Curled Traditional Last</p>
+            <p class="fab-text"><strong>Cloth:</strong> Raw Silk & Buff Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/sho-032.png" alt="Braided Leather Kolhapuri Chappals" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">sho-032</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-SHO-032</span>
+          <h4 class="item-name" title="Braided Leather Kolhapuri Chappals">Braided Leather Kolhapuri Chappals</h4>
+          <div class="item-meta">
+            <span class="subcat">Traditional Footwear</span> &bull; 
+            <span class="color-dot" style="background-color: #D97706;"></span>
+            <span class="color-text">Camel</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Toe-Ring Open Sandal</p>
+            <p class="fab-text"><strong>Cloth:</strong> Hand-Pounded Bagtani Leather</p>
+          </div>
+        </div>
+      </div>
+    
+        </div>
+      </section>
+    
+      <section class="category-section">
+        <div class="section-header">
+          <h2 class="category-title">Accessories Collection</h2>
+          <span class="category-count">28 Distinct Garment Designs</span>
+        </div>
+        <div class="contact-grid">
+          
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/accessory_brown_watch.jpg" alt="Fluted-Bezel Chronometer Watch" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">acc-001</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-001</span>
+          <h4 class="item-name" title="Fluted-Bezel Chronometer Watch">Fluted-Bezel Chronometer Watch</h4>
+          <div class="item-meta">
+            <span class="subcat">Watch</span> &bull; 
+            <span class="color-dot" style="background-color: #78350F;"></span>
+            <span class="color-text">Brown</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 38mm Balanced Horological Dress Watch</p>
+            <p class="fab-text"><strong>Cloth:</strong> 316L Steel & Horween Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-002.png" alt="Bauhaus Minimalist Square Watch" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-002</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-002</span>
+          <h4 class="item-name" title="Bauhaus Minimalist Square Watch">Bauhaus Minimalist Square Watch</h4>
+          <div class="item-meta">
+            <span class="subcat">Watch</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Ultra-Thin Geometric Dress Watch</p>
+            <p class="fab-text"><strong>Cloth:</strong> Brushed Steel & Milanese Mesh</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-003.png" alt="Titanium Diver Tool Watch" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-003</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-003</span>
+          <h4 class="item-name" title="Titanium Diver Tool Watch">Titanium Diver Tool Watch</h4>
+          <div class="item-meta">
+            <span class="subcat">Watch</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 41mm Rugged Dive Watch (300m)</p>
+            <p class="fab-text"><strong>Cloth:</strong> Grade 5 Titanium & FKM Rubber</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-004.png" alt="Vintage Roman Numeral Tank Watch" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-004</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-004</span>
+          <h4 class="item-name" title="Vintage Roman Numeral Tank Watch">Vintage Roman Numeral Tank Watch</h4>
+          <div class="item-meta">
+            <span class="subcat">Watch</span> &bull; 
+            <span class="color-dot" style="background-color: #D97706;"></span>
+            <span class="color-text">Camel</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Rectangular Art Deco Dress Watch</p>
+            <p class="fab-text"><strong>Cloth:</strong> 18k Gold Plated Brass & Alligator</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-005.png" alt="Panda Dial Racing Chronograph" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-005</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-005</span>
+          <h4 class="item-name" title="Panda Dial Racing Chronograph">Panda Dial Racing Chronograph</h4>
+          <div class="item-meta">
+            <span class="subcat">Watch</span> &bull; 
+            <span class="color-dot" style="background-color: #FFFFFF;"></span>
+            <span class="color-text">White</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Vintage Motorsports Chrono</p>
+            <p class="fab-text"><strong>Cloth:</strong> Stainless Steel & Rally Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-006.png" alt="Stealth Matte Ceramic Field Watch" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-006</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-006</span>
+          <h4 class="item-name" title="Stealth Matte Ceramic Field Watch">Stealth Matte Ceramic Field Watch</h4>
+          <div class="item-meta">
+            <span class="subcat">Watch</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Military Field Watch</p>
+            <p class="fab-text"><strong>Cloth:</strong> Matte Ceramic & Nylon Webbing</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/tortoise_sunglasses.jpg" alt="Handmade Tortoiseshell Sunglasses" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">acc-007</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-007</span>
+          <h4 class="item-name" title="Handmade Tortoiseshell Sunglasses">Handmade Tortoiseshell Sunglasses</h4>
+          <div class="item-meta">
+            <span class="subcat">Sunglasses</span> &bull; 
+            <span class="color-dot" style="background-color: #78350F;"></span>
+            <span class="color-text">Brown</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Keyhole Bridge Square Wayfarer</p>
+            <p class="fab-text"><strong>Cloth:</strong> Mazzucchelli Italian Acetate</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-008.png" alt="Titanium Aviator Wireframe Shades" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-008</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-008</span>
+          <h4 class="item-name" title="Titanium Aviator Wireframe Shades">Titanium Aviator Wireframe Shades</h4>
+          <div class="item-meta">
+            <span class="subcat">Sunglasses</span> &bull; 
+            <span class="color-dot" style="background-color: #FEF3C7;"></span>
+            <span class="color-text">Champagne</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Teardrop Pilot Aviator</p>
+            <p class="fab-text"><strong>Cloth:</strong> Japanese Ultralight Beta-Titanium</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-009.png" alt="Retro Round Panto Acetate Frames" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-009</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-009</span>
+          <h4 class="item-name" title="Retro Round Panto Acetate Frames">Retro Round Panto Acetate Frames</h4>
+          <div class="item-meta">
+            <span class="subcat">Sunglasses</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 1930s Intellectual Round Panto</p>
+            <p class="fab-text"><strong>Cloth:</strong> Bio-Acetate & Mineral Glass</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-010.png" alt="Monolithic Shield Cyber Sunglasses" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-010</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-010</span>
+          <h4 class="item-name" title="Monolithic Shield Cyber Sunglasses">Monolithic Shield Cyber Sunglasses</h4>
+          <div class="item-meta">
+            <span class="subcat">Sunglasses</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Futuristic Wraparound Shield</p>
+            <p class="fab-text"><strong>Cloth:</strong> Single Toric Nylon Shield Lens</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-011.png" alt="Champagne Crystal Acetate Sunnies" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-011</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-011</span>
+          <h4 class="item-name" title="Champagne Crystal Acetate Sunnies">Champagne Crystal Acetate Sunnies</h4>
+          <div class="item-meta">
+            <span class="subcat">Sunglasses</span> &bull; 
+            <span class="color-dot" style="background-color: #FEF3C7;"></span>
+            <span class="color-text">Champagne</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Square Beveled Frame</p>
+            <p class="fab-text"><strong>Cloth:</strong> Translucent Crystal Acetate</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-012.png" alt="Clubmaster Browline Retro Shades" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-012</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-012</span>
+          <h4 class="item-name" title="Clubmaster Browline Retro Shades">Clubmaster Browline Retro Shades</h4>
+          <div class="item-meta">
+            <span class="subcat">Sunglasses</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 1950s Browline Silhouette</p>
+            <p class="fab-text"><strong>Cloth:</strong> Ebony Acetate & 24k Gold Metal</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-013.png" alt="Grenadine Weave Silk Necktie" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-013</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-013</span>
+          <h4 class="item-name" title="Grenadine Weave Silk Necktie">Grenadine Weave Silk Necktie</h4>
+          <div class="item-meta">
+            <span class="subcat">Tie</span> &bull; 
+            <span class="color-dot" style="background-color: #4C0519;"></span>
+            <span class="color-text">Bordeaux</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 3-Inch Classic Untipped Blade</p>
+            <p class="fab-text"><strong>Cloth:</strong> Como Silk Garza Grossa</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-014.png" alt="Knitted Silk Square-End Tie" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-014</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-014</span>
+          <h4 class="item-name" title="Knitted Silk Square-End Tie">Knitted Silk Square-End Tie</h4>
+          <div class="item-meta">
+            <span class="subcat">Tie</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 2.5-Inch Modern Square End</p>
+            <p class="fab-text"><strong>Cloth:</strong> Tubular Knitted Mulberry Silk</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-015.png" alt="Scottish Tartan Wool Necktie" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-015</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-015</span>
+          <h4 class="item-name" title="Scottish Tartan Wool Necktie">Scottish Tartan Wool Necktie</h4>
+          <div class="item-meta">
+            <span class="subcat">Tie</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Country Sartorial Blade</p>
+            <p class="fab-text"><strong>Cloth:</strong> Worsted Scottish Wool Tartan</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/charcoal_scarf.jpg" alt="Ribbed Merino & Silk Winter Scarf" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Studio Photo
+          </span>
+          <span class="id-pill">acc-016</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-016</span>
+          <h4 class="item-name" title="Ribbed Merino & Silk Winter Scarf">Ribbed Merino & Silk Winter Scarf</h4>
+          <div class="item-meta">
+            <span class="subcat">Scarf</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 70" x 14" Wrap Scarf</p>
+            <p class="fab-text"><strong>Cloth:</strong> 70% Merino Wool, 30% Silk</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-017.png" alt="Cashmere Royal Stewart Tartan Scarf" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-017</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-017</span>
+          <h4 class="item-name" title="Cashmere Royal Stewart Tartan Scarf">Cashmere Royal Stewart Tartan Scarf</h4>
+          <div class="item-meta">
+            <span class="subcat">Scarf</span> &bull; 
+            <span class="color-dot" style="background-color: #881337;"></span>
+            <span class="color-text">Burgundy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Fringed Plaid Blanket Scarf</p>
+            <p class="fab-text"><strong>Cloth:</strong> 100% Cashmere with Teasel Finish</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-018.png" alt="Saddler Bridle Leather Belt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-018</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-018</span>
+          <h4 class="item-name" title="Saddler Bridle Leather Belt">Saddler Bridle Leather Belt</h4>
+          <div class="item-meta">
+            <span class="subcat">Belt</span> &bull; 
+            <span class="color-dot" style="background-color: #78350F;"></span>
+            <span class="color-text">Brown</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 32mm Classic Dress Width</p>
+            <p class="fab-text"><strong>Cloth:</strong> Sedgwick English Bridle Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-019.png" alt="Braided Waxed Leather Casual Belt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-019</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-019</span>
+          <h4 class="item-name" title="Braided Waxed Leather Casual Belt">Braided Waxed Leather Casual Belt</h4>
+          <div class="item-meta">
+            <span class="subcat">Belt</span> &bull; 
+            <span class="color-dot" style="background-color: #D97706;"></span>
+            <span class="color-text">Camel</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Interwoven Flexible Width</p>
+            <p class="fab-text"><strong>Cloth:</strong> Hand-Plaited Full-Grain Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-020.png" alt="Formal Black Calfskin Dress Belt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-020</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-020</span>
+          <h4 class="item-name" title="Formal Black Calfskin Dress Belt">Formal Black Calfskin Dress Belt</h4>
+          <div class="item-meta">
+            <span class="subcat">Belt</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 30mm Sleek Formal Width</p>
+            <p class="fab-text"><strong>Cloth:</strong> Feathered French Calf Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-021.png" alt="Military Webbing Cobra Buckle Belt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-021</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-021</span>
+          <h4 class="item-name" title="Military Webbing Cobra Buckle Belt">Military Webbing Cobra Buckle Belt</h4>
+          <div class="item-meta">
+            <span class="subcat">Belt</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Heavy Tactical Cinch Belt</p>
+            <p class="fab-text"><strong>Cloth:</strong> Ballistic Mil-Spec Nylon Webbing</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-022.png" alt="Engraved Western Silver Buckle Belt" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-022</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-022</span>
+          <h4 class="item-name" title="Engraved Western Silver Buckle Belt">Engraved Western Silver Buckle Belt</h4>
+          <div class="item-meta">
+            <span class="subcat">Belt</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 1.25" Western Tapered Belt</p>
+            <p class="fab-text"><strong>Cloth:</strong> Heavy Cowhide & Sterling Silver</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-023.png" alt="Structured Pebble Leather Tote Bag" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-023</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-023</span>
+          <h4 class="item-name" title="Structured Pebble Leather Tote Bag">Structured Pebble Leather Tote Bag</h4>
+          <div class="item-meta">
+            <span class="subcat">Bag</span> &bull; 
+            <span class="color-dot" style="background-color: #111827;"></span>
+            <span class="color-text">Black</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Architectural Vertical Tote with Base</p>
+            <p class="fab-text"><strong>Cloth:</strong> Full-Grain Pebble Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-024.png" alt="Canvas & Leather Weekender Duffle" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-024</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-024</span>
+          <h4 class="item-name" title="Canvas & Leather Weekender Duffle">Canvas & Leather Weekender Duffle</h4>
+          <div class="item-meta">
+            <span class="subcat">Bag</span> &bull; 
+            <span class="color-dot" style="background-color: #4D7C0F;"></span>
+            <span class="color-text">Olive</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 45L Cylindrical Travel Holdall</p>
+            <p class="fab-text"><strong>Cloth:</strong> Heavy 18oz Waxed Canvas & Bridle Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-025.png" alt="Minimalist Leather Crossbody Pouch" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-025</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-025</span>
+          <h4 class="item-name" title="Minimalist Leather Crossbody Pouch">Minimalist Leather Crossbody Pouch</h4>
+          <div class="item-meta">
+            <span class="subcat">Bag</span> &bull; 
+            <span class="color-dot" style="background-color: #374151;"></span>
+            <span class="color-text">Charcoal</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Sleek Low-Profile Sling Pouch</p>
+            <p class="fab-text"><strong>Cloth:</strong> Water-Resistant Rubberized Leather</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-026.png" alt="Ribbed Mongolian Cashmere Beanie" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-026</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-026</span>
+          <h4 class="item-name" title="Ribbed Mongolian Cashmere Beanie">Ribbed Mongolian Cashmere Beanie</h4>
+          <div class="item-meta">
+            <span class="subcat">Beanie</span> &bull; 
+            <span class="color-dot" style="background-color: #1E3A8A;"></span>
+            <span class="color-text">Navy</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> Classic Fold-Over Fisherman Beanie</p>
+            <p class="fab-text"><strong>Cloth:</strong> Pure 4-Ply Mongolian Cashmere</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-027.png" alt="Unstructured Cotton Twill Dad Cap" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-027</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-027</span>
+          <h4 class="item-name" title="Unstructured Cotton Twill Dad Cap">Unstructured Cotton Twill Dad Cap</h4>
+          <div class="item-meta">
+            <span class="subcat">Cap</span> &bull; 
+            <span class="color-dot" style="background-color: #A8A29E;"></span>
+            <span class="color-text">Khaki</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 6-Panel Low-Crown Baseball Cap</p>
+            <p class="fab-text"><strong>Cloth:</strong> Washed Chino Cotton Twill</p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="contact-card is-photo">
+        <div class="card-thumb-wrap">
+          <img src="http://localhost:5000/clothing-assets/acc-028.png" alt="Pure Mulberry Silk Pocket Square" class="card-thumb" />
+          <span class="type-pill pill-photo">
+            Photorealistic
+          </span>
+          <span class="id-pill">acc-028</span>
+        </div>
+        <div class="card-info">
+          <span class="concept-id">DSGN-ACC-028</span>
+          <h4 class="item-name" title="Pure Mulberry Silk Pocket Square">Pure Mulberry Silk Pocket Square</h4>
+          <div class="item-meta">
+            <span class="subcat">Tie</span> &bull; 
+            <span class="color-dot" style="background-color: #FEF3C7;"></span>
+            <span class="color-text">Champagne</span>
+          </div>
+          <div class="item-details">
+            <p class="sil-text"><strong>Cut:</strong> 17" x 17" Sartorial Pocket Square</p>
+            <p class="fab-text"><strong>Cloth:</strong> Hand-Rolled 16-Momme Silk Twill</p>
+          </div>
+        </div>
+      </div>
+    
+        </div>
+      </section>
+    
+  </main>
+
+</body>
+</html>
+  

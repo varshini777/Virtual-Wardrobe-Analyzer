@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#f8f9fa"/>
+      <stop offset="100%" stop-color="#e9ecef"/>
+    </radialGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <ellipse cx="300" cy="515" rx="175" ry="20" fill="#000000" opacity="0.08"/>
+  <g filter="url(#shadow)">
+    
+    <defs>
+      <linearGradient id="navyBlazer" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1e3a8a"/>
+        <stop offset="100%" stop-color="#0f172a"/>
+      </linearGradient>
+    </defs>
+    <path d="M 220 140 L 150 200 L 180 250 L 215 225 L 210 480 L 390 480 L 385 225 L 420 250 L 450 200 L 380 140 Z" fill="url(#navyBlazer)" stroke="#020617" stroke-width="1.5"/>
+    <polygon points="275,140 325,140 300,245" fill="#ffffff"/>
+    <polygon points="295,150 305,150 308,225 300,235 292,225" fill="#b91c1c"/>
+    <path d="M 220 140 L 265 245 L 300 335 L 335 245 L 380 140 L 335 190 L 325 185 L 345 140 Z" fill="#172554" stroke="#0f172a" stroke-width="1.5"/>
+    <circle cx="300" cy="355" r="5" fill="#d4af37" stroke="#996515" stroke-width="1"/>
+    <circle cx="300" cy="395" r="5" fill="#d4af37" stroke="#996515" stroke-width="1"/>
+    <rect x="230" y="385" width="55" height="12" rx="2" fill="#172554" stroke="#0f172a"/>
+    <rect x="315" y="385" width="55" height="12" rx="2" fill="#172554" stroke="#0f172a"/>
+    <rect x="240" y="240" width="35" height="8" rx="1.5" fill="#172554" stroke="#0f172a"/>
+    <!-- Pocket Square -->
+    <polygon points="250,240 258,230 266,240" fill="#ffffff"/>
+  
+  </g>
+</svg>

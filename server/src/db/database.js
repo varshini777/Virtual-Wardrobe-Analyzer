@@ -3,6 +3,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import bcrypt from 'bcryptjs';
+import { CURATED_WARDROBE } from '../data/curatedWardrobe.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +20,9 @@ const dbPath = process.env.DB_PATH
 
 export const db = new DatabaseSync(dbPath);
 
-// Enable foreign keys
+// Enable WAL mode, busy timeout, and foreign keys
+db.exec('PRAGMA journal_mode = WAL;');
+db.exec('PRAGMA busy_timeout = 5000;');
 db.exec('PRAGMA foreign_keys = ON;');
 
 export function initDatabase() {
@@ -102,6 +105,59 @@ export function initDatabase() {
     db.exec('ALTER TABLE users ADD COLUMN email TEXT;');
   }
 
+  // Migration: Ensure secondary_color, pattern, fabric, style, season in clothing_items
+  const itemColumns = db.prepare('PRAGMA table_info(clothing_items)').all();
+  const itemColumnNames = itemColumns.map(c => c.name);
+  if (!itemColumnNames.includes('secondary_color')) {
+    db.exec('ALTER TABLE clothing_items ADD COLUMN secondary_color TEXT;');
+  }
+  if (!itemColumnNames.includes('pattern')) {
+    db.exec('ALTER TABLE clothing_items ADD COLUMN pattern TEXT;');
+  }
+  if (!itemColumnNames.includes('fabric')) {
+    db.exec('ALTER TABLE clothing_items ADD COLUMN fabric TEXT;');
+  }
+  if (!itemColumnNames.includes('style')) {
+    db.exec('ALTER TABLE clothing_items ADD COLUMN style TEXT;');
+  }
+  if (!itemColumnNames.includes('season')) {
+    db.exec("ALTER TABLE clothing_items ADD COLUMN season TEXT DEFAULT 'All Seasons';");
+  }
+  if (!itemColumnNames.includes('concept_id')) {
+    db.exec('ALTER TABLE clothing_items ADD COLUMN concept_id TEXT;');
+  }
+  if (!itemColumnNames.includes('silhouette')) {
+    db.exec('ALTER TABLE clothing_items ADD COLUMN silhouette TEXT;');
+  }
+  if (!itemColumnNames.includes('gender_presentation')) {
+    db.exec("ALTER TABLE clothing_items ADD COLUMN gender_presentation TEXT DEFAULT 'Unisex';");
+  }
+  if (!itemColumnNames.includes('waterproof_status')) {
+    db.exec("ALTER TABLE clothing_items ADD COLUMN waterproof_status TEXT DEFAULT 'Unknown';");
+  }
+
+  // Migration: Ensure default_season, gender_presentation, preferred_fit in user_preferences
+  const prefColumns = db.prepare('PRAGMA table_info(user_preferences)').all();
+  const prefColumnNames = prefColumns.map(c => c.name);
+  if (!prefColumnNames.includes('default_season')) {
+    db.exec("ALTER TABLE user_preferences ADD COLUMN default_season TEXT DEFAULT 'All Seasons';");
+  }
+  if (!prefColumnNames.includes('gender_presentation')) {
+    db.exec("ALTER TABLE user_preferences ADD COLUMN gender_presentation TEXT DEFAULT 'Show All';");
+  }
+  if (!prefColumnNames.includes('preferred_fit')) {
+    db.exec("ALTER TABLE user_preferences ADD COLUMN preferred_fit TEXT DEFAULT 'All';");
+  }
+  if (!prefColumnNames.includes('strict_occasion')) {
+    db.exec("ALTER TABLE user_preferences ADD COLUMN strict_occasion INTEGER DEFAULT 0;");
+  }
+  if (!prefColumnNames.includes('strict_weather')) {
+    db.exec("ALTER TABLE user_preferences ADD COLUMN strict_weather INTEGER DEFAULT 0;");
+  }
+  if (!prefColumnNames.includes('strict_color_exclusion')) {
+    db.exec("ALTER TABLE user_preferences ADD COLUMN strict_color_exclusion INTEGER DEFAULT 0;");
+  }
+
   // Seed / Update standard demo account
   const defaultPasswordHash = bcrypt.hashSync('demo123', 10);
   const now = new Date().toISOString();
@@ -126,7 +182,7 @@ export function initDatabase() {
       now
     );
 
-    seedSampleWardrobe('default-user');
+    seedSampleWardrobe('default-user', true);
   } else {
     if (!existingDefault.password_hash) {
       db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(defaultPasswordHash, 'default-user');
@@ -134,9 +190,12 @@ export function initDatabase() {
     if (!existingDefault.email) {
       db.prepare('UPDATE users SET email = ? WHERE id = ?').run('demo@wardrobe.internal', 'default-user');
     }
+    const defaultCount = db.prepare('SELECT COUNT(*) as count FROM clothing_items WHERE user_id = ?').get('default-user');
+    if (!defaultCount || defaultCount.count < 100) {
+      seedSampleWardrobe('default-user', true);
+    }
   }
 
-  // Backfill sample items with realistic image URLs if previously null
   backfillSampleImages();
 }
 
@@ -170,228 +229,78 @@ function backfillSampleImages() {
   }
 }
 
-export function seedSampleWardrobe(userId) {
-  const count = db.prepare('SELECT COUNT(*) as count FROM clothing_items WHERE user_id = ?').get(userId);
-  if (count.count > 0) return;
+export const COLOR_HEX_MAP = {
+  white: '#FFFFFF',
+  black: '#111827',
+  grey: '#6B7280',
+  gray: '#6B7280',
+  charcoal: '#374151',
+  navy: '#1E3A8A',
+  blue: '#2563EB',
+  'light blue': '#93C5FD',
+  denim: '#3B82F6',
+  beige: '#D4C4A8',
+  cream: '#FDFBF7',
+  brown: '#78350F',
+  tan: '#D2B48C',
+  khaki: '#A39171',
+  olive: '#556B2F',
+  green: '#15803D',
+  burgundy: '#831843',
+  maroon: '#800000',
+  red: '#DC2626',
+  pink: '#EC4899',
+  purple: '#7C3AED',
+  yellow: '#EAB308',
+  orange: '#EA580C',
+  gold: '#D4AF37',
+  silver: '#E2E8F0',
+  bronze: '#CD7F32'
+};
+
+export function resolveColorHex(color) {
+  if (!color) return '#94A3B8';
+  return COLOR_HEX_MAP[color.trim().toLowerCase()] || '#94A3B8';
+}
+
+export function seedSampleWardrobe(userId, force = false) {
+  if (!force) {
+    const count = db.prepare('SELECT COUNT(*) as count FROM clothing_items WHERE user_id = ?').get(userId);
+    if (count && count.count >= 100) return;
+  }
 
   const now = new Date().toISOString();
-  const sampleItems = [
-    // Tops
-    {
-      id: `item-top-1-${userId.slice(-6)}`,
-      name: 'Classic White Linen Shirt',
-      category: 'Top',
-      sub_category: 'Shirt',
-      color: 'White',
-      hex_color: '#FFFFFF',
-      weather_suitability: 'Hot',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/top_white_shirt.svg',
-      notes: 'Lightweight, airy breathable European linen'
-    },
-    {
-      id: `item-top-2-${userId.slice(-6)}`,
-      name: 'Navy Oxford Button-Down',
-      category: 'Top',
-      sub_category: 'Shirt',
-      color: 'Navy',
-      hex_color: '#1E3A8A',
-      weather_suitability: 'All Weather',
-      occasion: 'Work',
-      image_url: '/clothing-assets/top_navy_shirt.jpg',
-      notes: 'Structured formal cotton with button-down collar'
-    },
-    {
-      id: `item-top-3-${userId.slice(-6)}`,
-      name: 'Grey Cashmere Crewneck',
-      category: 'Top',
-      sub_category: 'Sweater',
-      color: 'Grey',
-      hex_color: '#6B7280',
-      weather_suitability: 'Cold',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/top_grey_sweater.jpg',
-      notes: 'Soft warm layering knit'
-    },
-    {
-      id: `item-top-4-${userId.slice(-6)}`,
-      name: 'Black Minimalist T-Shirt',
-      category: 'Top',
-      sub_category: 'T-shirt',
-      color: 'Black',
-      hex_color: '#111827',
-      weather_suitability: 'Hot',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/top_black_tshirt.svg',
-      notes: 'Heavyweight organic combed cotton'
-    },
-    {
-      id: `item-top-5-${userId.slice(-6)}`,
-      name: 'Olive Polo Shirt',
-      category: 'Top',
-      sub_category: 'Polo',
-      color: 'Olive',
-      hex_color: '#556B2F',
-      weather_suitability: 'All Weather',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/top_olive_polo.jpg',
-      notes: 'Smart casual textured waffle knit'
-    },
-    // Bottoms
-    {
-      id: `item-bot-1-${userId.slice(-6)}`,
-      name: 'Beige Stretch Chinos',
-      category: 'Bottom',
-      sub_category: 'Chinos',
-      color: 'Beige',
-      hex_color: '#D4C4A8',
-      weather_suitability: 'All Weather',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/bottom_beige_chinos.jpg',
-      notes: 'Versatile slim-straight silhouette'
-    },
-    {
-      id: `item-bot-2-${userId.slice(-6)}`,
-      name: 'Dark Indigo Slim Jeans',
-      category: 'Bottom',
-      sub_category: 'Jeans',
-      color: 'Blue',
-      hex_color: '#1E293B',
-      weather_suitability: 'All Weather',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/bottom_blue_jeans.jpg',
-      notes: 'Raw denim finish with copper stitching'
-    },
-    {
-      id: `item-bot-3-${userId.slice(-6)}`,
-      name: 'Charcoal Tailored Trousers',
-      category: 'Bottom',
-      sub_category: 'Trousers',
-      color: 'Grey',
-      hex_color: '#374151',
-      weather_suitability: 'All Weather',
-      occasion: 'Work',
-      image_url: '/clothing-assets/bottom_grey_trousers.jpg',
-      notes: 'Sharp center press fold for office and events'
-    },
-    {
-      id: `item-bot-4-${userId.slice(-6)}`,
-      name: 'Khaki Tailored Shorts',
-      category: 'Bottom',
-      sub_category: 'Shorts',
-      color: 'Beige',
-      hex_color: '#C2B280',
-      weather_suitability: 'Hot',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/bottom_beige_shorts.svg',
-      notes: 'Chino shorts for warm summer days'
-    },
-    // Shoes
-    {
-      id: `item-sho-1-${userId.slice(-6)}`,
-      name: 'Crisp White Minimalist Sneakers',
-      category: 'Shoes',
-      sub_category: 'Sneakers',
-      color: 'White',
-      hex_color: '#F8FAFC',
-      weather_suitability: 'All Weather',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/shoes_white_sneakers.jpg',
-      notes: 'Clean full-grain leather low-tops'
-    },
-    {
-      id: `item-sho-2-${userId.slice(-6)}`,
-      name: 'Cognac Leather Penny Loafers',
-      category: 'Shoes',
-      sub_category: 'Loafers',
-      color: 'Brown',
-      hex_color: '#78350F',
-      weather_suitability: 'All Weather',
-      occasion: 'Work',
-      image_url: '/clothing-assets/shoes_brown_loafers.jpg',
-      notes: 'Italian hand-stitched leather'
-    },
-    {
-      id: `item-sho-3-${userId.slice(-6)}`,
-      name: 'Waterproof Black Chelsea Boots',
-      category: 'Shoes',
-      sub_category: 'Boots',
-      color: 'Black',
-      hex_color: '#000000',
-      weather_suitability: 'Rainy',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/shoes_black_boots.svg',
-      notes: 'Weatherproof treated leather with rubber lug sole'
-    },
-    {
-      id: `item-sho-4-${userId.slice(-6)}`,
-      name: 'Classic Black Oxford Shoes',
-      category: 'Shoes',
-      sub_category: 'Formal Shoes',
-      color: 'Black',
-      hex_color: '#18181B',
-      weather_suitability: 'All Weather',
-      occasion: 'Formal',
-      image_url: '/clothing-assets/shoes_black_oxfords.svg',
-      notes: 'Polished calfskin for formal occasions'
-    },
-    // Accessories
-    {
-      id: `item-acc-1-${userId.slice(-6)}`,
-      name: 'Brown Leather Minimalist Watch',
-      category: 'Accessories',
-      sub_category: 'Watch',
-      color: 'Brown',
-      hex_color: '#78350F',
-      weather_suitability: 'All Weather',
-      occasion: 'All Occasions',
-      image_url: '/clothing-assets/accessory_brown_watch.jpg',
-      notes: 'Rose gold bezel with chestnut strap'
-    },
-    {
-      id: `item-acc-2-${userId.slice(-6)}`,
-      name: 'Tortoise Shell Sunglasses',
-      category: 'Accessories',
-      sub_category: 'Sunglasses',
-      color: 'Brown',
-      hex_color: '#451A03',
-      weather_suitability: 'Hot',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/accessory_sunglasses.jpg',
-      notes: 'Polarized UV400 lenses'
-    },
-    {
-      id: `item-acc-3-${userId.slice(-6)}`,
-      name: 'Charcoal Wool Ribbed Scarf',
-      category: 'Accessories',
-      sub_category: 'Scarf',
-      color: 'Grey',
-      hex_color: '#4B5563',
-      weather_suitability: 'Cold',
-      occasion: 'Casual',
-      image_url: '/clothing-assets/accessory_grey_scarf.jpg',
-      notes: 'Cozy merino wool'
-    }
-  ];
-
-  const stmt = db.prepare(`
-    INSERT INTO clothing_items (
-      id, user_id, name, category, sub_category, color, hex_color,
-      weather_suitability, occasion, image_url, notes, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  const insertStmt = db.prepare(`
+    INSERT OR REPLACE INTO clothing_items (
+      id, user_id, name, category, sub_category, color, secondary_color, hex_color,
+      pattern, fabric, silhouette, concept_id, style, season, weather_suitability, occasion, image_url, notes,
+      created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  for (const item of sampleItems) {
-    stmt.run(
-      item.id,
+  const isDefaultUser = (userId === 'default-user');
+
+  for (const item of CURATED_WARDROBE) {
+    const itemId = isDefaultUser ? item.id : `${item.id}-${userId.slice(-6)}`;
+    const hexColor = item.hex_color || resolveColorHex(item.color);
+
+    insertStmt.run(
+      itemId,
       userId,
       item.name,
       item.category,
       item.sub_category,
       item.color,
-      item.hex_color,
-      item.weather_suitability,
-      item.occasion,
+      item.secondary_color || null,
+      hexColor,
+      item.pattern || 'Solid',
+      item.fabric || 'Cotton',
+      item.silhouette || null,
+      item.concept_id || null,
+      item.style || 'Casual',
+      item.season || 'All Seasons',
+      item.weather_suitability || 'All Weather',
+      item.occasion || 'Casual',
       item.image_url,
       item.notes || null,
       now,

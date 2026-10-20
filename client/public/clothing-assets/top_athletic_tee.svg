@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#f8f9fa"/>
+      <stop offset="100%" stop-color="#e9ecef"/>
+    </radialGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)"/>
+  <ellipse cx="300" cy="515" rx="175" ry="20" fill="#000000" opacity="0.08"/>
+  <g filter="url(#shadow)">
+    
+    <defs>
+      <linearGradient id="sportGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#15803d"/>
+        <stop offset="100%" stop-color="#166534"/>
+      </linearGradient>
+    </defs>
+    <path d="M 225 145 L 150 195 L 180 245 L 225 220 L 225 470 L 375 470 L 375 220 L 420 245 L 450 195 L 375 145 Z" fill="url(#sportGrad)" stroke="#14532d" stroke-width="2"/>
+    <!-- Raglan Athletic Seams -->
+    <line x1="260" y1="145" x2="225" y2="220" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+    <line x1="340" y1="145" x2="375" y2="220" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+    <!-- Breathable Mesh Side Panels -->
+    <path d="M 225 240 L 240 250 L 240 460 L 225 470 Z" fill="#14532d" opacity="0.7"/>
+    <path d="M 375 240 L 360 250 L 360 460 L 375 470 Z" fill="#14532d" opacity="0.7"/>
+    <!-- Reflective Chest Icon -->
+    <polygon points="295,240 305,240 308,255 292,255" fill="#bbf7d0"/>
+  
+  </g>
+</svg>

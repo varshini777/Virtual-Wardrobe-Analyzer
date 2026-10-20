@@ -167,9 +167,13 @@ export const api = {
   async getItems(filters = {}) {
     const params = new URLSearchParams();
     if (filters.category && filters.category !== 'All') params.append('category', filters.category);
+    if (filters.sub_category && filters.sub_category !== 'All') params.append('sub_category', filters.sub_category);
+    if (filters.color && filters.color !== 'All') params.append('color', filters.color);
     if (filters.weather && filters.weather !== 'All') params.append('weather', filters.weather);
+    if (filters.season && filters.season !== 'All') params.append('season', filters.season);
     if (filters.occasion && filters.occasion !== 'All') params.append('occasion', filters.occasion);
     if (filters.search) params.append('search', filters.search);
+    if (filters.sort) params.append('sort', filters.sort);
 
     const queryStr = params.toString() ? `?${params.toString()}` : '';
     return request(`/items${queryStr}`);
@@ -216,10 +220,29 @@ export const api = {
     return request('/recommendations/status');
   },
 
-  async generateRecommendations(weather, occasion, maxRecommendations = 5) {
+  async generateRecommendations(paramsOrWeather, occasionMaybe, seasonOrMax = 'All Seasons', maxRecommendations = 5) {
+    let body = {};
+    if (typeof paramsOrWeather === 'object' && paramsOrWeather !== null) {
+      body = paramsOrWeather;
+    } else {
+      let season = 'All Seasons';
+      let max = 5;
+      if (typeof seasonOrMax === 'number') {
+        max = seasonOrMax;
+      } else if (typeof seasonOrMax === 'string') {
+        season = seasonOrMax;
+        max = maxRecommendations;
+      }
+      body = {
+        weather: paramsOrWeather,
+        occasion: occasionMaybe,
+        season,
+        maxRecommendations: max
+      };
+    }
     return request('/recommendations/generate', {
       method: 'POST',
-      body: JSON.stringify({ weather, occasion, maxRecommendations })
+      body: JSON.stringify(body)
     });
   },
 
